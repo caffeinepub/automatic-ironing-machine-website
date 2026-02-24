@@ -1,0 +1,222 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 13,
+  "summary": "Multi-page website for an automatic ironing machine product called 'AIron' targeting the Indian market. Includes a login page, product landing page with price (₹20,000), features page (with Shoe Drying feature, without AI Wrinkle Detection), and a Razorpay-style simulated payment gateway UI. Images are sourced exclusively from user-provided uploads (image-4.png, image-5.png, image-6.png, image-7.png). Website is fully mobile-responsive.",
+  "architectural_notes": [
+    "Multi-page site: Login → Product Landing → Features → Checkout",
+    "Product name: AIron; target market: India; price: ₹20,000 (Indian Rupees)",
+    "Payment gateway: Razorpay-style simulated UI (no real gateway), supports dummy payments",
+    "Website must be fully mobile-responsive",
+    "All product images must be from user-provided uploads only (image-4.png, image-5.png, image-6.png, image-7.png); no external or third-party images"
+  ],
+  "known_issues": [],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-apply-a-premium-sleek-visual-theme-across-all-pages-inspired-by-modern-appliance-tech-product-websites-use-a-clean-high-contrast-color-palette-e-g-deep-charcoal-or-near-black-backgrounds-with-bright-white-text-and-a-warm-metallic-or-silver-accent-typography-should-feel-refined-and-professional-layout-should-use-generous-whitespace-full-width-hero-sections-and-card-based-feature-grids-enforce-the-theme-consistently-on-all-pages-including-login-landing-features-and-checkout",
+      "title": "Apply a premium, sleek visual theme across all pages inspired by modern appliance/tech product websites. Use a clean, high-contrast color palette (e.g., deep charcoal or near-black backgrounds with bright white text and a warm metallic or silver accent). Typography should feel refined and professional. Layout should use generous whitespace, full-width hero sections, and card-based feature grids. Enforce the theme consistently on all pages including login, landing, features, and checkout.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-use-the-generated-product-images-as-static-assets-served-from-frontend-public-assets-generated-across-the-landing-page-features-page-and-checkout-page-the-hero-image-should-be-used-prominently-on-the-landing-page-additional-machine-detail-images-should-be-used-on-the-features-page",
+      "title": "Use the generated product images as static assets (served from frontend/public/assets/generated) across the landing page, features page, and checkout page. The hero image should be used prominently on the landing page. Additional machine detail images should be used on the features page.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-rename-the-product-from-ironpro-to-airon-across-all-pages-and-components-including-the-header-logo-in-layout-tsx-the-product-landing-page-features-page-checkout-page-payment-success-page-payment-failure-page-and-login-page-also-update-the-html-page-title-in-index-html-to-reflect-the-new-product-name",
+      "title": "Rename the product from 'IronPro' to 'AIron' across all pages and components, including the header/logo in Layout.tsx, the product landing page, features page, checkout page, payment success page, payment failure page, and login page. Also update the HTML page title in index.html to reflect the new product name.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-product-price-to-20-000-and-change-all-currency-denominations-from-usd-to-indian-rupees-across-all-pages-including-the-product-landing-page-hero-pricing-section-the-checkout-page-order-summary-and-the-payment-success-page-product-summary",
+      "title": "Update the product price to ₹20,000 and change all currency denominations from USD ($) to Indian Rupees (₹) across all pages, including the product landing page hero/pricing section, the checkout page order summary, and the payment success page product summary.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-ai-wrinkle-detection-feature-card-from-the-featurespage-and-replace-it-with-a-shoe-drying-feature-card-the-shoe-drying-feature-should-use-the-uploaded-sneaker-image-image-1-png-as-its-illustration-and-include-a-description-explaining-that-airon-can-also-be-used-to-dry-and-freshen-shoes",
+      "title": "Remove the 'AI Wrinkle Detection' feature card from the FeaturesPage and replace it with a 'Shoe Drying' feature card. The Shoe Drying feature should use the uploaded sneaker image (image-1.png) as its illustration and include a description explaining that AIron can also be used to dry and freshen shoes.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-redesign-the-checkoutpage-to-replicate-a-razorpay-style-payment-modal-ui-the-layout-should-have-1-a-blue-header-panel-with-the-airon-logo-initial-avatar-airon-merchant-name-a-razorpay-trusted-business-badge-the-total-amount-displayed-as-20-000-and-a-secured-by-razorpay-footer-2-a-contact-details-section-with-a-91-country-code-dropdown-and-a-phone-number-input-field-3-a-proceed-button-that-advances-to-the-payment-method-selection-step-4-a-payment-method-list-screen-showing-card-visa-mastercard-rupay-upi-qr-netbanking-all-indian-banks-wallet-phonepe-more-emi-via-debit-credit-cards-and-pay-later-lazypay-icici-flexipay-each-as-a-tappable-row-with-icon-and-description-5-selecting-any-payment-method-shows-a-mock-confirmation-screen-or-simple-form-with-a-pay-now-button-at-the-bottom-that-simulates-payment-success-and-redirects-to-the-existing-paymentsuccess-page-no-real-payment-processing-is-required-all-flows-should-be-simulated-dummy",
+      "title": "Redesign the CheckoutPage to replicate a Razorpay-style payment modal UI. The layout should have: (1) a blue header panel with the AIron logo/initial avatar, 'AIron' merchant name, a 'Razorpay Trusted Business' badge, the total amount displayed as ₹20,000, and a 'Secured by Razorpay' footer; (2) a Contact Details section with a +91 country-code dropdown and a phone number input field; (3) a 'Proceed' button that advances to the payment method selection step; (4) a payment method list screen showing Card (Visa/MasterCard/RuPay), UPI/QR, Netbanking (All Indian banks), Wallet (PhonePe & More), EMI (via Debit/Credit cards), and Pay Later (LazyPay, ICICI, FlexiPay) — each as a tappable row with icon and description; (5) selecting any payment method shows a mock confirmation screen or simple form, with a 'Pay Now' button at the bottom that simulates payment success and redirects to the existing PaymentSuccess page. No real payment processing is required — all flows should be simulated/dummy.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-entire-website-is-fully-mobile-responsive-across-all-pages-loginpage-productlandingpage-featurespage-checkoutpage-razorpay-style-ui-paymentsuccess-and-paymentfailure-all-layouts-must-adapt-gracefully-to-small-screens-320px-768px-including-the-header-nav-hero-sections-feature-grids-and-the-payment-modal-touch-targets-must-be-adequately-sized-text-must-remain-readable-without-horizontal-scrolling-and-images-must-scale-properly",
+      "title": "Ensure the entire website is fully mobile-responsive across all pages: LoginPage, ProductLandingPage, FeaturesPage, CheckoutPage (Razorpay-style UI), PaymentSuccess, and PaymentFailure. All layouts must adapt gracefully to small screens (320px–768px), including the header/nav, hero sections, feature grids, and the payment modal. Touch targets must be adequately sized, text must remain readable without horizontal scrolling, and images must scale properly.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-all-product-images-currently-used-across-the-website-with-the-user-provided-uploaded-images-use-image-4-png-as-the-hero-primary-image-on-the-productlandingpage-use-image-5-png-for-the-shoe-drying-feature-card-on-the-featurespage-use-image-6-png-as-the-machine-detail-illustration-on-the-featurespage-use-image-7-png-as-the-lifestyle-action-shot-on-the-productlandingpage-or-featurespage-no-external-placeholder-or-scanovus-sourced-images-should-remain-anywhere-on-the-site-all-images-must-be-served-from-frontend-public-assets-generated",
+      "title": "Replace all product images currently used across the website with the user-provided uploaded images. Use image-4.png as the hero/primary image on the ProductLandingPage. Use image-5.png for the Shoe Drying feature card on the FeaturesPage. Use image-6.png as the machine detail illustration on the FeaturesPage. Use image-7.png as the lifestyle/action shot on the ProductLandingPage or FeaturesPage. No external, placeholder, or Scanovus-sourced images should remain anywhere on the site. All images must be served from frontend/public/assets/generated.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-razorpay-style-checkoutpage-so-all-interactive-elements-are-fully-functional-and-respond-to-user-clicks-specifically-1-the-proceed-button-on-the-contact-details-step-must-advance-the-ui-to-the-payment-method-selection-screen-2-each-payment-method-row-card-upi-qr-netbanking-wallet-emi-pay-later-must-be-clickable-and-when-selected-display-a-mock-confirmation-screen-or-simple-form-relevant-to-that-method-3-the-pay-now-button-on-the-confirmation-form-screen-must-simulate-payment-success-and-navigate-the-user-to-the-paymentsuccess-page-react-state-must-drive-all-step-transitions-no-step-should-be-static-or-unresponsive",
+      "title": "Fix the Razorpay-style CheckoutPage so all interactive elements are fully functional and respond to user clicks. Specifically: (1) The 'Proceed' button on the contact details step must advance the UI to the payment method selection screen; (2) Each payment method row (Card, UPI/QR, Netbanking, Wallet, EMI, Pay Later) must be clickable and, when selected, display a mock confirmation screen or simple form relevant to that method; (3) The 'Pay Now' button on the confirmation/form screen must simulate payment success and navigate the user to the PaymentSuccess page. React state must drive all step transitions. No step should be static or unresponsive.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-quantity-selector-component-on-the-featurespage-positioned-immediately-before-the-buy-now-proceed-to-checkout-button-the-selector-should-allow-users-to-pick-a-positive-integer-quantity-minimum-1-default-to-1-and-pass-the-selected-quantity-as-a-url-parameter-or-state-when-navigating-to-the-checkoutpage-the-checkoutpage-order-summary-should-reflect-the-selected-quantity-and-update-the-total-price-accordingly-quantity-20-000",
+      "title": "Add a quantity selector component on the FeaturesPage, positioned immediately before the 'Buy Now' / proceed-to-checkout button. The selector should allow users to pick a positive integer quantity (minimum 1), default to 1, and pass the selected quantity as a URL parameter or state when navigating to the CheckoutPage. The CheckoutPage order summary should reflect the selected quantity and update the total price accordingly (quantity × ₹20,000).",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-every-mention-of-robotic-arm-from-the-entire-website-this-includes-feature-card-titles-feature-card-descriptions-body-copy-technical-specs-tables-headings-tooltips-alt-text-and-any-other-ui-text-across-all-pages-productlandingpage-featurespage-checkoutpage-paymentsuccess-paymentfailure-loginpage-layout-if-a-feature-card-or-spec-row-is-dedicated-solely-to-the-robotic-arm-delete-it-entirely-if-the-phrase-appears-inline-within-broader-copy-remove-only-that-phrase-and-rephrase-the-sentence-naturally",
+      "title": "Remove every mention of 'robotic arm' from the entire website. This includes feature card titles, feature card descriptions, body copy, technical specs tables, headings, tooltips, alt text, and any other UI text across all pages (ProductLandingPage, FeaturesPage, CheckoutPage, PaymentSuccess, PaymentFailure, LoginPage, Layout). If a feature card or spec row is dedicated solely to the robotic arm, delete it entirely. If the phrase appears inline within broader copy, remove only that phrase and rephrase the sentence naturally.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-restore-the-dark-near-black-background-color-scheme-across-all-pages-and-components-that-have-drifted-to-white-all-page-backgrounds-card-backgrounds-header-footer-and-section-backgrounds-should-use-the-original-deep-charcoal-or-near-black-colors-consistent-with-the-established-premium-dark-theme-white-or-light-backgrounds-that-were-not-intentionally-part-of-the-design-must-be-reverted-to-the-dark-equivalents-foreground-text-white-light-and-accent-colors-gold-silver-should-remain-unchanged",
+      "title": "Restore the dark/near-black background color scheme across all pages and components that have drifted to white. All page backgrounds, card backgrounds, header, footer, and section backgrounds should use the original deep charcoal or near-black colors (consistent with the established premium dark theme). White or light backgrounds that were not intentionally part of the design must be reverted to the dark equivalents. Foreground text (white/light) and accent colors (gold/silver) should remain unchanged.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Login page with authentication",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Product landing page showcasing automatic ironing machine with price",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Features page with product details and a payment/buy button",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Payment gateway integration (Stripe free tier) for checkout",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Implement a login page using Internet Identity authentication. The login page should be the entry point of the application, requiring users to authenticate before accessing other pages. Display a welcoming hero area with the product brand and a prominent 'Sign In with Internet Identity' button.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Create a product landing page (home page, accessible after login) showcasing the automatic ironing machine. Display the product name, a hero image of the machine, a short compelling description, key selling points, and a clear price. Include a prominent 'View Features' or 'Buy Now' call-to-action button that navigates to the Features page.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Create a Features page that lists the detailed features and benefits of the automatic ironing machine. Display feature sections with icons or images, descriptive text for each feature, and include a 'Buy Now' or 'Proceed to Payment' button at the bottom (and optionally mid-page) that navigates to the checkout/payment page.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Integrate Stripe Checkout (free tier) as the payment gateway. Create a backend endpoint that generates a Stripe Checkout session for the automatic ironing machine product. The frontend Checkout page should display an order summary and a 'Pay Now' button that redirects the user to the Stripe-hosted checkout. Handle success and cancel redirect URLs back to the app.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Rename the product to 'AIron', update the price to ₹20,000, and change all currency denominations to Indian Rupees (₹) across all pages (landing, features, checkout).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Remove 'AI Wrinkle Detection' from the features list and add a 'Shoe Drying' feature using the sneaker image",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Redesign the payment gateway page to match a Razorpay-style UI: blue header with AIron branding and ₹20,000 total, contact details/phone input, payment method selection (Card, UPI/QR, Netbanking, Wallet, EMI, Pay Later), and a simulated dummy payment flow (Proceed → Pay Now → Success)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Make the entire website fully mobile-responsive across all pages (login, landing, features, checkout/payment)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Replace all existing product images with user-provided images only: image-4.png (hero/landing), image-5.png (shoe drying feature), image-6.png (features page machine), image-7.png (lifestyle/action shot). No external or Scanovus-sourced images allowed.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Fix the Razorpay-style payment gateway so all interactive elements (payment method rows, Proceed button, Pay Now button) are fully clickable and the flow is dynamic/responsive to user interactions.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Add a quantity selector on the Features page before the 'Buy Now' / payment button so users can choose how many units to order before proceeding to checkout",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Remove all mentions of 'robotic arm' from the website entirely",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Automatic Ironing Machine Website",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

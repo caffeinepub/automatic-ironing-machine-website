@@ -1,0 +1,44 @@
+{
+  "kind": "build_request",
+  "title": "Restore dark/black color scheme across all pages",
+  "projectName": "AIron",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-16",
+      "text": "Restore the dark/near-black background color scheme across all pages and components that have drifted to white. All page backgrounds, card backgrounds, header, footer, and section backgrounds should use the original deep charcoal or near-black colors (consistent with the established premium dark theme). White or light backgrounds that were not intentionally part of the design must be reverted to the dark equivalents. Foreground text (white/light) and accent colors (gold/silver) should remain unchanged.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "the color has changed to white earlier it was black which looked good. I request you to change that"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All page backgrounds (ProductLandingPage, FeaturesPage, CheckoutPage, LoginPage, PaymentSuccess, PaymentFailure) display dark/near-black backgrounds, not white.",
+        "The Layout header retains its dark background.",
+        "Card and section backgrounds use dark charcoal tones consistent with the premium theme.",
+        "White text on dark backgrounds remains readable and no contrast is broken.",
+        "No page or major UI section appears with a white or near-white background unless it was part of the original intentional design (e.g., the Razorpay-style modal panel).",
+        "The Razorpay-style checkout modal's blue header and internal white form panel styling is preserved as designed, but the surrounding page background is dark."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not alter any files under frontend/src/hooks/ or frontend/src/components/ui.",
+    "Do not change font choices, accent colors (gold/silver), or layout structure.",
+    "Do not remove or modify any existing functionality — this is a color-only fix."
+  ],
+  "nonGoals": [
+    "Changing typography or font sizes.",
+    "Modifying the Razorpay modal's internal blue header or form panel colors.",
+    "Adding new features or pages.",
+    "Altering backend logic."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
