@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-restore-the-dark-near-black-background-color-scheme-across-all-pages-and-components-that-have-drifted-to-white-all-page-backgrounds-card-backgrounds-header-footer-and-section-backgrounds-should-use-the-original-deep-charcoal-or-near-black-colors-consistent-with-the-established-premium-dark-theme-white-or-light-backgrounds-that-were-not-intentionally-part-of-the-design-must-be-reverted-to-the-dark-equivalents-foreground-text-white-light-and-accent-colors-gold-silver-should-remain-unchanged",
-      "featureTitle": "Restore the dark/near-black background color scheme across all pages and components that have drifted to white. All page backgrounds, card backgrounds, header, footer, and section backgrounds should use the original deep charcoal or near-black colors (consistent with the established premium dark theme). White or light backgrounds that were not intentionally part of the design must be reverted to the dark equivalents. Foreground text (white/light) and accent colors (gold/silver) should remain unchanged.",
+      "featureId": "feature-fix-the-paymentsuccess-page-so-it-correctly-reads-and-displays-the-quantity-selected-by-the-user-on-the-featurespage-the-quantity-must-be-passed-through-the-entire-flow-featurespage-checkoutpage-paymentsuccess-via-url-parameters-or-navigation-state-and-the-paymentsuccess-page-must-display-the-actual-selected-quantity-not-a-hardcoded-value-of-1-in-the-order-summary-the-total-price-shown-on-paymentsuccess-must-also-reflect-quantity-20-000",
+      "featureTitle": "Fix the PaymentSuccess page so it correctly reads and displays the quantity selected by the user on the FeaturesPage. The quantity must be passed through the entire flow (FeaturesPage → CheckoutPage → PaymentSuccess) via URL parameters or navigation state, and the PaymentSuccess page must display the actual selected quantity (not a hardcoded value of 1) in the order summary. The total price shown on PaymentSuccess must also reflect quantity × ₹20,000.",
       "files": [
-        "frontend/src/index.css",
-        "frontend/tailwind.config.js"
+        "frontend/src/pages/CheckoutPage.tsx",
+        "frontend/src/pages/PaymentSuccess.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -19,7 +19,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-16"
+        "REQ-17"
       ],
       "confidence": "high"
     }

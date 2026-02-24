@@ -1,64 +1,33 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Restore dark/black color scheme across all pages",
+  "title": "Fix PaymentSuccess page to display correct quantity",
   "requirements": [
     {
-      "id": "REQ-16",
-      "summary": "Restore the dark/near-black background color scheme across all pages and components that have drifted to white, ensuring consistency with the established premium dark theme while preserving white/light foreground text and gold/silver accents.",
+      "id": "REQ-17",
+      "summary": "Fix the PaymentSuccess page to correctly read and display the quantity selected by the user on the FeaturesPage, ensuring the quantity is passed through the entire flow (FeaturesPage → CheckoutPage → PaymentSuccess) and the total price reflects quantity × ₹20,000",
       "acceptanceCriteria": [
-        "All page backgrounds (ProductLandingPage, FeaturesPage, CheckoutPage, LoginPage, PaymentSuccess, PaymentFailure) display dark/near-black backgrounds, not white.",
-        "The Layout header retains its dark background.",
-        "Card and section backgrounds use dark charcoal tones consistent with the premium theme.",
-        "White text on dark backgrounds remains readable and no contrast is broken.",
-        "No page or major UI section appears with a white or near-white background unless it was part of the original intentional design (e.g., the Razorpay-style modal panel).",
-        "The Razorpay-style checkout modal's blue header and internal white form panel styling is preserved as designed, but the surrounding page background is dark."
+        "When a user selects a quantity greater than 1 on the FeaturesPage and completes the simulated payment flow, the PaymentSuccess page displays that exact quantity in the order summary.",
+        "The total price on the PaymentSuccess page equals the selected quantity × ₹20,000.",
+        "The quantity value is preserved through CheckoutPage navigation and correctly forwarded to the PaymentSuccess page.",
+        "If no quantity is provided (direct navigation), the PaymentSuccess page defaults to quantity 1.",
+        "The fix does not break the existing step transitions in the Razorpay-style CheckoutPage flow."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Update global CSS custom properties to enforce dark/near-black backgrounds across the application. Set --background to deep charcoal (e.g., oklch(0.15 0.01 240)) and --card to a slightly lighter charcoal tone. Ensure --foreground remains light for readability. Verify that base layer styles apply dark backgrounds to body and maintain text contrast."
-        },
-        {
-          "path": "frontend/src/pages/ProductLandingPage.tsx",
-          "operation": "modify",
-          "description": "Review and update component to ensure all container divs, sections, and card backgrounds use dark charcoal classes (e.g., bg-charcoal-dark or bg-background). Replace any white/light background classes with dark equivalents. Ensure hero section, feature cards, and all text overlays maintain the premium dark theme with light text."
-        },
-        {
           "path": "frontend/src/pages/FeaturesPage.tsx",
           "operation": "modify",
-          "description": "Update page container and all section backgrounds to use dark charcoal tones. Replace any white or light background classes on the main wrapper, feature sections, specification cards, and quantity selector area with dark equivalents (bg-charcoal-dark, bg-background, or bg-card). Preserve gold accent buttons and light text for readability."
+          "description": "Modify the navigation to CheckoutPage to include the quantity as a URL search parameter when the user clicks the 'Proceed to Checkout' button, ensuring the selected quantity value is passed through the navigation flow."
         },
         {
           "path": "frontend/src/pages/CheckoutPage.tsx",
           "operation": "modify",
-          "description": "Restore dark background to the checkout page container and step panels. Update the main page wrapper to use bg-charcoal-dark or bg-background. For the Razorpay-style checkout modal panel with blue header and white form interior, ensure only the interior form panel retains white background while the surrounding page/overlay remains dark. Update card containers for contact, payment method, and confirmation steps to use dark charcoal backgrounds with light text."
-        },
-        {
-          "path": "frontend/src/pages/LoginPage.tsx",
-          "operation": "modify",
-          "description": "Update the login page container to use dark/near-black background. Replace any white or light background classes on the main wrapper and card container with bg-charcoal-dark or bg-background. Ensure login card or form uses bg-card (dark charcoal) and text remains light for contrast."
+          "description": "Read the quantity from the incoming URL search parameters using the urlParams utility, store it in component state, and pass the quantity as a URL search parameter when navigating to the PaymentSuccess page upon completing the simulated payment flow."
         },
         {
           "path": "frontend/src/pages/PaymentSuccess.tsx",
           "operation": "modify",
-          "description": "Restore dark background to the payment success page. Update the main container, order status card, next-steps sections, and product summary container to use dark charcoal backgrounds (bg-charcoal-dark, bg-card). Ensure all text is light and gold/silver accents are preserved. Replace any white backgrounds with dark equivalents."
-        },
-        {
-          "path": "frontend/src/pages/PaymentFailure.tsx",
-          "operation": "modify",
-          "description": "Update the payment failure page to use dark background throughout. Replace white or light backgrounds on the main wrapper, failure message card, and action button containers with dark charcoal classes (bg-charcoal-dark, bg-background). Maintain light text and gold button accents for consistency."
-        },
-        {
-          "path": "frontend/src/components/Layout.tsx",
-          "operation": "modify",
-          "description": "Verify and preserve the dark header background. Ensure the header uses bg-charcoal-dark or equivalent dark class, and that the main content outlet area does not introduce white backgrounds. The layout should enforce dark theme by default for all child routes."
-        },
-        {
-          "path": "frontend/tailwind.config.js",
-          "operation": "modify",
-          "description": "Review and update charcoal color token definitions to ensure they map to deep near-black values in OKLCH space. Confirm that background and card tokens in the extend.colors section are set to dark charcoal tones (e.g., charcoal-dark: oklch(0.15 0.01 240), charcoal: oklch(0.20 0.01 240)). Ensure no light or white fallback values are inadvertently overriding the dark theme."
+          "description": "Read the quantity from the URL search parameters using the urlParams utility, default to 1 if not provided, calculate the total price as quantity × ₹20,000, and display both the actual quantity and calculated total in the order summary section."
         }
       ]
     }

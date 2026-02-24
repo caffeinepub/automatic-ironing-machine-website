@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 13,
+  "projectStateVersion": 15,
   "summary": "Multi-page website for an automatic ironing machine product called 'AIron' targeting the Indian market. Includes a login page, product landing page with price (₹20,000), features page (with Shoe Drying feature, without AI Wrinkle Detection), and a Razorpay-style simulated payment gateway UI. Images are sourced exclusively from user-provided uploads (image-4.png, image-5.png, image-6.png, image-7.png). Website is fully mobile-responsive.",
   "architectural_notes": [
     "Multi-page site: Login → Product Landing → Features → Checkout",
@@ -9,7 +9,9 @@
     "Website must be fully mobile-responsive",
     "All product images must be from user-provided uploads only (image-4.png, image-5.png, image-6.png, image-7.png); no external or third-party images"
   ],
-  "known_issues": [],
+  "known_issues": [
+    "PaymentSuccess page always shows quantity as 1 regardless of what was selected on the Features page"
+  ],
   "isFixRequest": true,
   "existing_features": [
     {
@@ -105,6 +107,14 @@
       "title": "Restore the dark/near-black background color scheme across all pages and components that have drifted to white. All page backgrounds, card backgrounds, header, footer, and section backgrounds should use the original deep charcoal or near-black colors (consistent with the established premium dark theme). White or light backgrounds that were not intentionally part of the design must be reverted to the dark equivalents. Foreground text (white/light) and accent colors (gold/silver) should remain unchanged.",
       "reqIds": [
         "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-paymentsuccess-page-so-it-correctly-reads-and-displays-the-quantity-selected-by-the-user-on-the-featurespage-the-quantity-must-be-passed-through-the-entire-flow-featurespage-checkoutpage-paymentsuccess-via-url-parameters-or-navigation-state-and-the-paymentsuccess-page-must-display-the-actual-selected-quantity-not-a-hardcoded-value-of-1-in-the-order-summary-the-total-price-shown-on-paymentsuccess-must-also-reflect-quantity-20-000",
+      "title": "Fix the PaymentSuccess page so it correctly reads and displays the quantity selected by the user on the FeaturesPage. The quantity must be passed through the entire flow (FeaturesPage → CheckoutPage → PaymentSuccess) via URL parameters or navigation state, and the PaymentSuccess page must display the actual selected quantity (not a hardcoded value of 1) in the order summary. The total price shown on PaymentSuccess must also reflect quantity × ₹20,000.",
+      "reqIds": [
+        "REQ-17"
       ],
       "version": 1
     }
@@ -211,6 +221,12 @@
     {
       "id": "AR-16",
       "summary": "Remove all mentions of 'robotic arm' from the website entirely",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Fix the PaymentSuccess page to correctly display the quantity selected on the Features page (currently always shows 1); quantity should flow from Features → Checkout → PaymentSuccess",
       "reqIds": [],
       "status": "pending"
     }

@@ -41,6 +41,9 @@ const checkoutRoute = createRoute({
 const paymentSuccessRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/payment-success',
+  validateSearch: (search: Record<string, unknown>) => ({
+    quantity: search.quantity ? String(search.quantity) : '1',
+  }),
   component: PaymentSuccess,
 });
 

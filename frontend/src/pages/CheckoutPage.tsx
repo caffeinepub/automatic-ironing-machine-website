@@ -72,7 +72,7 @@ export default function CheckoutPage() {
     setIsPaying(true);
     await new Promise((res) => setTimeout(res, 2000));
     setIsPaying(false);
-    navigate({ to: '/payment-success' });
+    navigate({ to: '/payment-success', search: { quantity: String(quantity) } });
   };
 
   const progressSteps = [
@@ -232,58 +232,46 @@ export default function CheckoutPage() {
 
         {/* Step: Method */}
         {step === 'method' && (
-          <div className="bg-charcoal-900 border border-charcoal-700 rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <button
-                onClick={() => setStep('contact')}
-                className="text-silver-400 hover:text-white transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </button>
-              <h2 className="font-serif text-xl font-semibold text-white">
-                Payment Method
-              </h2>
-            </div>
-            <div className="space-y-3">
-              {paymentMethods.map((method) => {
-                const Icon = method.icon;
-                return (
-                  <button
-                    key={method.id}
-                    onClick={() => handleMethodSelect(method.id)}
-                    className="w-full flex items-center gap-4 bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-600 hover:border-gold-500 rounded-xl px-4 py-4 transition-all duration-200 text-left"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-gold-500/10 flex items-center justify-center shrink-0">
-                      <Icon className="w-5 h-5 text-gold-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-white font-medium text-sm">{method.label}</p>
-                      <p className="text-silver-500 text-xs">{method.description}</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-silver-500 shrink-0" />
-                  </button>
-                );
-              })}
-            </div>
+          <div className="bg-charcoal-900 border border-charcoal-700 rounded-2xl p-6 space-y-3">
+            <h2 className="font-serif text-xl font-semibold text-white mb-2">
+              Choose Payment Method
+            </h2>
+            {paymentMethods.map((method) => {
+              const Icon = method.icon;
+              return (
+                <button
+                  key={method.id}
+                  onClick={() => handleMethodSelect(method.id)}
+                  className="w-full flex items-center gap-4 bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-600 hover:border-gold-500 rounded-xl px-4 py-4 transition-all duration-200 text-left group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-gold-500/10 flex items-center justify-center shrink-0">
+                    <Icon className="w-5 h-5 text-gold-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium text-sm">{method.label}</p>
+                    <p className="text-silver-500 text-xs mt-0.5">{method.description}</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-silver-500 group-hover:text-gold-400 transition-colors shrink-0" />
+                </button>
+              );
+            })}
+            <button
+              onClick={() => setStep('contact')}
+              className="w-full text-silver-400 hover:text-white text-sm py-2 transition-colors"
+            >
+              ← Back
+            </button>
           </div>
         )}
 
         {/* Step: Confirm */}
-        {step === 'confirm' && selectedMethod && (
+        {step === 'confirm' && (
           <div className="bg-charcoal-900 border border-charcoal-700 rounded-2xl p-6 space-y-5">
-            <div className="flex items-center gap-2 mb-2">
-              <button
-                onClick={() => setStep('method')}
-                className="text-silver-400 hover:text-white transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </button>
-              <h2 className="font-serif text-xl font-semibold text-white">
-                {paymentMethods.find((m) => m.id === selectedMethod)?.label}
-              </h2>
-            </div>
+            <h2 className="font-serif text-xl font-semibold text-white mb-2">
+              Confirm & Pay
+            </h2>
 
-            {/* Card inputs */}
+            {/* Payment method details */}
             {selectedMethod === 'card' && (
               <div className="space-y-3">
                 <div>
@@ -292,47 +280,37 @@ export default function CheckoutPage() {
                   </label>
                   <input
                     type="text"
-                    maxLength={19}
                     value={cardNumber}
-                    onChange={(e) =>
-                      setCardNumber(
-                        e.target.value
-                          .replace(/\D/g, '')
-                          .replace(/(.{4})/g, '$1 ')
-                          .trim()
-                      )
-                    }
+                    onChange={(e) => setCardNumber(e.target.value)}
                     placeholder="1234 5678 9012 3456"
-                    className="w-full bg-charcoal-800 border border-charcoal-600 rounded-xl px-4 py-3 text-white placeholder:text-silver-600 focus:outline-none focus:border-gold-500 transition-colors text-sm tracking-widest"
+                    maxLength={19}
+                    className="w-full bg-charcoal-800 border border-charcoal-600 rounded-xl px-4 py-3 text-white placeholder:text-silver-600 focus:outline-none focus:border-gold-500 transition-colors text-sm"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
+                <div className="flex gap-3">
+                  <div className="flex-1">
                     <label className="block text-silver-400 text-xs mb-1 uppercase tracking-wide">
                       Expiry
                     </label>
                     <input
                       type="text"
-                      maxLength={5}
                       value={cardExpiry}
-                      onChange={(e) => {
-                        const v = e.target.value.replace(/\D/g, '');
-                        setCardExpiry(v.length > 2 ? `${v.slice(0, 2)}/${v.slice(2)}` : v);
-                      }}
+                      onChange={(e) => setCardExpiry(e.target.value)}
                       placeholder="MM/YY"
+                      maxLength={5}
                       className="w-full bg-charcoal-800 border border-charcoal-600 rounded-xl px-4 py-3 text-white placeholder:text-silver-600 focus:outline-none focus:border-gold-500 transition-colors text-sm"
                     />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <label className="block text-silver-400 text-xs mb-1 uppercase tracking-wide">
                       CVV
                     </label>
                     <input
                       type="password"
-                      maxLength={4}
                       value={cardCvv}
-                      onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, ''))}
+                      onChange={(e) => setCardCvv(e.target.value)}
                       placeholder="•••"
+                      maxLength={4}
                       className="w-full bg-charcoal-800 border border-charcoal-600 rounded-xl px-4 py-3 text-white placeholder:text-silver-600 focus:outline-none focus:border-gold-500 transition-colors text-sm"
                     />
                   </div>
@@ -340,7 +318,6 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* UPI input */}
             {selectedMethod === 'upi' && (
               <div>
                 <label className="block text-silver-400 text-xs mb-1 uppercase tracking-wide">
@@ -356,7 +333,6 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* Net Banking */}
             {selectedMethod === 'netbanking' && (
               <div>
                 <label className="block text-silver-400 text-xs mb-1 uppercase tracking-wide">
@@ -377,13 +353,12 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* Wallet */}
             {selectedMethod === 'wallet' && (
-              <div className="grid grid-cols-3 gap-3">
-                {['Paytm', 'Mobikwik', 'Freecharge'].map((w) => (
+              <div className="grid grid-cols-2 gap-3">
+                {['Paytm', 'Mobikwik', 'Freecharge', 'Amazon Pay'].map((w) => (
                   <button
                     key={w}
-                    className="bg-charcoal-800 border border-charcoal-600 hover:border-gold-500 rounded-xl py-3 text-sm text-white transition-colors"
+                    className="bg-charcoal-800 border border-charcoal-600 hover:border-gold-500 rounded-xl py-3 text-sm text-silver-300 hover:text-white transition-all"
                   >
                     {w}
                   </button>
@@ -391,26 +366,28 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* Order total summary */}
+            {/* Summary */}
             <div className="border-t border-charcoal-700 pt-4 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-silver-400">Unit Price</span>
-                <span className="text-white">₹{unitPrice.toLocaleString('en-IN')}</span>
+                <span className="text-silver-400">
+                  AIron × {quantity}
+                </span>
+                <span className="text-white">₹{totalPrice.toLocaleString('en-IN')}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-silver-400">Quantity</span>
-                <span className="text-white">{quantity}</span>
+                <span className="text-silver-400">Shipping</span>
+                <span className="text-green-400 text-xs font-medium">FREE</span>
               </div>
-              <div className="flex justify-between text-sm font-semibold">
-                <span className="text-silver-300">Total</span>
-                <span className="text-gold-400 text-base">₹{totalPrice.toLocaleString('en-IN')}</span>
+              <div className="flex justify-between font-semibold text-base pt-2 border-t border-charcoal-700">
+                <span className="text-white">Total</span>
+                <span className="text-gold-400">₹{totalPrice.toLocaleString('en-IN')}</span>
               </div>
             </div>
 
             <button
               onClick={handlePay}
               disabled={isPaying}
-              className="btn-gold w-full py-3 rounded-xl font-semibold text-sm tracking-wide flex items-center justify-center gap-2 disabled:opacity-70"
+              className="btn-gold w-full py-4 rounded-xl font-semibold text-sm tracking-wide flex items-center justify-center gap-2 disabled:opacity-70"
             >
               {isPaying ? (
                 <>
@@ -418,16 +395,16 @@ export default function CheckoutPage() {
                   Processing…
                 </>
               ) : (
-                <>
-                  <Lock className="w-4 h-4" />
-                  Pay ₹{totalPrice.toLocaleString('en-IN')}
-                </>
+                `Pay ₹${totalPrice.toLocaleString('en-IN')}`
               )}
             </button>
 
-            <p className="text-center text-silver-600 text-xs">
-              Your payment is secured with 256-bit SSL encryption
-            </p>
+            <button
+              onClick={() => setStep('method')}
+              className="w-full text-silver-400 hover:text-white text-sm py-2 transition-colors"
+            >
+              ← Change Payment Method
+            </button>
           </div>
         )}
       </div>

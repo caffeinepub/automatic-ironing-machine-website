@@ -1,13 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Restore the dark/near-black color scheme across all pages and components that have drifted to white backgrounds.
+**Goal:** Fix the PaymentSuccess page to correctly display the quantity selected by the user and compute the total price accordingly.
 
 **Planned changes:**
-- Revert page backgrounds on ProductLandingPage, FeaturesPage, CheckoutPage, LoginPage, PaymentSuccess, and PaymentFailure from white/light to dark/near-black charcoal tones
-- Ensure the Layout header and footer retain their dark backgrounds
-- Restore card and section backgrounds to dark charcoal tones consistent with the premium dark theme
-- Preserve white/light foreground text and gold/silver accent colors unchanged
-- Keep the Razorpay-style checkout modal's internal styling intact while ensuring the surrounding page background is dark
+- Pass the selected quantity from FeaturesPage through CheckoutPage to PaymentSuccess via URL parameters or navigation state.
+- Update PaymentSuccess to read the quantity from the passed state/params instead of using a hardcoded value of 1.
+- Update the total price displayed on PaymentSuccess to reflect quantity × ₹20,000.
+- Default to quantity 1 on PaymentSuccess if no quantity is provided (e.g., direct navigation).
 
-**User-visible outcome:** All pages display the original premium dark/near-black color scheme instead of white backgrounds, restoring the intended visual appearance throughout the application.
+**User-visible outcome:** When a user selects a quantity greater than 1 and completes the simulated payment flow, the PaymentSuccess page correctly shows the chosen quantity and the corresponding total price.

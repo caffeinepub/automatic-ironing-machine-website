@@ -1,41 +1,39 @@
 {
   "kind": "build_request",
-  "title": "Restore dark/black color scheme across all pages",
+  "title": "Fix PaymentSuccess page to display correct quantity",
   "projectName": "AIron",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-16",
-      "text": "Restore the dark/near-black background color scheme across all pages and components that have drifted to white. All page backgrounds, card backgrounds, header, footer, and section backgrounds should use the original deep charcoal or near-black colors (consistent with the established premium dark theme). White or light backgrounds that were not intentionally part of the design must be reverted to the dark equivalents. Foreground text (white/light) and accent colors (gold/silver) should remain unchanged.",
+      "id": "REQ-17",
+      "text": "Fix the PaymentSuccess page so it correctly reads and displays the quantity selected by the user on the FeaturesPage. The quantity must be passed through the entire flow (FeaturesPage → CheckoutPage → PaymentSuccess) via URL parameters or navigation state, and the PaymentSuccess page must display the actual selected quantity (not a hardcoded value of 1) in the order summary. The total price shown on PaymentSuccess must also reflect quantity × ₹20,000.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-last"
         ],
         "quotes": [
-          "the color has changed to white earlier it was black which looked good. I request you to change that"
+          "in the last page after the payment is made the quantity doesnt change it is fixed as 1"
         ]
       },
       "acceptanceCriteria": [
-        "All page backgrounds (ProductLandingPage, FeaturesPage, CheckoutPage, LoginPage, PaymentSuccess, PaymentFailure) display dark/near-black backgrounds, not white.",
-        "The Layout header retains its dark background.",
-        "Card and section backgrounds use dark charcoal tones consistent with the premium theme.",
-        "White text on dark backgrounds remains readable and no contrast is broken.",
-        "No page or major UI section appears with a white or near-white background unless it was part of the original intentional design (e.g., the Razorpay-style modal panel).",
-        "The Razorpay-style checkout modal's blue header and internal white form panel styling is preserved as designed, but the surrounding page background is dark."
+        "When a user selects a quantity greater than 1 on the FeaturesPage and completes the simulated payment flow, the PaymentSuccess page displays that exact quantity in the order summary.",
+        "The total price on the PaymentSuccess page equals the selected quantity × ₹20,000.",
+        "The quantity value is preserved through CheckoutPage navigation and correctly forwarded to the PaymentSuccess page.",
+        "If no quantity is provided (direct navigation), the PaymentSuccess page defaults to quantity 1.",
+        "The fix does not break the existing step transitions in the Razorpay-style CheckoutPage flow."
       ]
     }
   ],
   "constraints": [
-    "Do not alter any files under frontend/src/hooks/ or frontend/src/components/ui.",
-    "Do not change font choices, accent colors (gold/silver), or layout structure.",
-    "Do not remove or modify any existing functionality — this is a color-only fix."
+    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui.",
+    "No real payment processing — all flows remain simulated/dummy.",
+    "All images must continue to be served from frontend/public/assets/generated."
   ],
   "nonGoals": [
-    "Changing typography or font sizes.",
-    "Modifying the Razorpay modal's internal blue header or form panel colors.",
-    "Adding new features or pages.",
-    "Altering backend logic."
+    "Changing the visual design or layout of the PaymentSuccess page beyond the quantity/total fix.",
+    "Adding new payment methods or modifying the Razorpay-style checkout UI steps.",
+    "Any backend changes."
   ],
   "imageRequirements": {
     "required": [],

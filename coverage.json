@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-24T15:30:30.846Z",
+  "generatedAt": "2026-02-24T15:44:26.584Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,23 +11,17 @@
     "implemented": 1,
     "items": [
       {
-        "id": "REQ-16",
-        "summary": "Restore the dark/near-black background color scheme across all pages and components that have drifted to white. All page backgrounds, card backgrounds, header, footer, and section backgrounds should use the original deep charcoal or near-black colors (consistent with the established premium dark theme). White or light backgrounds that were not intentionally part of the design must be reverted to the dark equivalents. Foreground text (white/light) and accent colors (gold/silver) should remain unchanged.",
+        "id": "REQ-17",
+        "summary": "Fix the PaymentSuccess page so it correctly reads and displays the quantity selected by the user on the FeaturesPage. The quantity must be passed through the entire flow (FeaturesPage → CheckoutPage → PaymentSuccess) via URL parameters or navigation state, and the PaymentSuccess page must display the actual selected quantity (not a hardcoded value of 1) in the order summary. The total price shown on PaymentSuccess must also reflect quantity × ₹20,000.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/index.css",
-          "frontend/src/pages/ProductLandingPage.tsx",
           "frontend/src/pages/FeaturesPage.tsx",
           "frontend/src/pages/CheckoutPage.tsx",
-          "frontend/src/pages/LoginPage.tsx",
-          "frontend/src/pages/PaymentSuccess.tsx",
-          "frontend/src/pages/PaymentFailure.tsx",
-          "frontend/src/components/Layout.tsx",
-          "frontend/tailwind.config.js"
+          "frontend/src/pages/PaymentSuccess.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/index.css",
-          "frontend/tailwind.config.js"
+          "frontend/src/pages/CheckoutPage.tsx",
+          "frontend/src/pages/PaymentSuccess.tsx"
         ]
       }
     ]
@@ -37,8 +31,9 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/index.css",
-    "frontend/tailwind.config.js",
+    "frontend/src/pages/CheckoutPage.tsx",
+    "frontend/src/pages/PaymentSuccess.tsx",
+    "frontend/src/routeTree.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

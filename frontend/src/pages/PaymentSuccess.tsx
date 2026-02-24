@@ -1,8 +1,13 @@
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { CheckCircle2, ArrowRight, Package, Mail, Phone } from 'lucide-react';
 
 export default function PaymentSuccess() {
   const navigate = useNavigate();
+  const search = useSearch({ from: '/payment-success' });
+  const quantity = Math.max(1, parseInt((search as Record<string, string>).quantity || '1', 10) || 1);
+
+  const unitPrice = 20000;
+  const totalPrice = unitPrice * quantity;
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 md:py-16"
@@ -27,7 +32,7 @@ export default function PaymentSuccess() {
           <div className="section-divider" />
           <p className="text-base md:text-lg leading-relaxed px-2"
             style={{ color: 'oklch(0.6 0.005 260)' }}>
-            Your AIron Automatic Ironing Machine has been ordered successfully.
+            Your AIron Automatic Ironing Machine{quantity > 1 ? ` (×${quantity})` : ''} has been ordered successfully.
             You'll receive a confirmation email shortly with your order details and tracking information.
           </p>
         </div>
@@ -82,9 +87,13 @@ export default function PaymentSuccess() {
               style={{ color: 'oklch(0.96 0.005 85)' }}>
               AIron Automatic Ironing Machine
             </p>
-            <p className="text-xs mt-1" style={{ color: 'oklch(0.55 0.005 260)' }}>Qty: 1</p>
+            <p className="text-xs mt-1" style={{ color: 'oklch(0.55 0.005 260)' }}>
+              Qty: {quantity} × ₹{unitPrice.toLocaleString('en-IN')}
+            </p>
           </div>
-          <span className="font-serif text-lg md:text-xl font-bold gold-text shrink-0">₹20,000</span>
+          <span className="font-serif text-lg md:text-xl font-bold gold-text shrink-0">
+            ₹{totalPrice.toLocaleString('en-IN')}
+          </span>
         </div>
 
         {/* Actions */}
