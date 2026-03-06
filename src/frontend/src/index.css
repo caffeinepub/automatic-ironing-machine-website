@@ -1,0 +1,237 @@
+/* Self-hosted fonts — no external CDN */
+@font-face {
+  font-family: "Sora";
+  src: url("/assets/fonts/Sora[wght].woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Outfit";
+  src: url("/assets/fonts/Outfit[wght].woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  src: url("/assets/fonts/PlayfairDisplay[wght].woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/assets/fonts/GeistMono[wght].woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+
+    /* Dark premium theme — always dark */
+    --background: 0.1 0.008 260;
+    --foreground: 0.96 0.005 85;
+    --card: 0.14 0.01 260;
+    --card-foreground: 0.96 0.005 85;
+    --popover: 0.16 0.01 260;
+    --popover-foreground: 0.96 0.005 85;
+    --primary: 0.72 0.12 75;
+    --primary-foreground: 0.1 0.008 260;
+    --secondary: 0.2 0.01 260;
+    --secondary-foreground: 0.96 0.005 85;
+    --muted: 0.2 0.01 260;
+    --muted-foreground: 0.6 0.01 260;
+    --accent: 0.72 0.12 75;
+    --accent-foreground: 0.1 0.008 260;
+    --destructive: 0.704 0.191 22.216;
+    --destructive-foreground: 0.205 0 0;
+    --border: 1 0 0 / 10%;
+    --input: 1 0 0 / 12%;
+    --ring: 0.72 0.12 75;
+    --chart-1: 0.488 0.243 264.376;
+    --chart-2: 0.696 0.17 162.48;
+    --chart-3: 0.769 0.188 70.08;
+    --chart-4: 0.627 0.265 303.9;
+    --chart-5: 0.645 0.246 16.439;
+    --sidebar: 0.14 0.01 260;
+    --sidebar-foreground: 0.96 0.005 85;
+    --sidebar-primary: 0.72 0.12 75;
+    --sidebar-primary-foreground: 0.1 0.008 260;
+    --sidebar-accent: 0.2 0.01 260;
+    --sidebar-accent-foreground: 0.96 0.005 85;
+    --sidebar-border: 1 0 0 / 10%;
+    --sidebar-ring: 0.72 0.12 75;
+
+    /* Custom tokens */
+    --gold: 0.72 0.12 75;
+    --gold-light: 0.82 0.1 75;
+    --charcoal: 0.18 0.01 260;
+    --charcoal-deep: 0.12 0.01 260;
+    --silver: 0.75 0.005 260;
+  }
+
+  .dark {
+    --background: 0.1 0.008 260;
+    --foreground: 0.96 0.005 85;
+    --card: 0.14 0.01 260;
+    --card-foreground: 0.96 0.005 85;
+    --popover: 0.16 0.01 260;
+    --popover-foreground: 0.96 0.005 85;
+    --primary: 0.72 0.12 75;
+    --primary-foreground: 0.1 0.008 260;
+    --secondary: 0.2 0.01 260;
+    --secondary-foreground: 0.96 0.005 85;
+    --muted: 0.2 0.01 260;
+    --muted-foreground: 0.6 0.01 260;
+    --accent: 0.72 0.12 75;
+    --accent-foreground: 0.1 0.008 260;
+    --destructive: 0.704 0.191 22.216;
+    --destructive-foreground: 0.205 0 0;
+    --border: 1 0 0 / 10%;
+    --input: 1 0 0 / 12%;
+    --ring: 0.72 0.12 75;
+    --chart-1: 0.488 0.243 264.376;
+    --chart-2: 0.696 0.17 162.48;
+    --chart-3: 0.769 0.188 70.08;
+    --chart-4: 0.627 0.265 303.9;
+    --chart-5: 0.645 0.246 16.439;
+    --sidebar: 0.14 0.01 260;
+    --sidebar-foreground: 0.96 0.005 85;
+    --sidebar-primary: 0.72 0.12 75;
+    --sidebar-primary-foreground: 0.1 0.008 260;
+    --sidebar-accent: 0.2 0.01 260;
+    --sidebar-accent-foreground: 0.96 0.005 85;
+    --sidebar-border: 1 0 0 / 10%;
+    --sidebar-ring: 0.72 0.12 75;
+
+    --gold: 0.72 0.12 75;
+    --gold-light: 0.82 0.1 75;
+    --charcoal: 0.18 0.01 260;
+    --charcoal-deep: 0.12 0.01 260;
+    --silver: 0.75 0.005 260;
+  }
+
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Inter", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    min-width: 320px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Playfair Display", serif;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Touch-friendly tap targets */
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    touch-action: manipulation;
+  }
+}
+
+@layer components {
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-3 font-semibold text-sm tracking-widest uppercase transition-all duration-300;
+    background: oklch(var(--gold));
+    color: oklch(var(--charcoal-deep));
+    border: 1px solid oklch(var(--gold));
+    min-height: 44px;
+  }
+  .btn-gold:hover {
+    background: oklch(var(--gold-light));
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px oklch(var(--gold) / 0.3);
+  }
+
+  .btn-outline-gold {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-3 font-semibold text-sm tracking-widest uppercase transition-all duration-300;
+    background: transparent;
+    color: oklch(var(--gold));
+    border: 1px solid oklch(var(--gold));
+    min-height: 44px;
+  }
+  .btn-outline-gold:hover {
+    background: oklch(var(--gold) / 0.1);
+    transform: translateY(-1px);
+  }
+
+  .section-divider {
+    @apply w-16 h-px mx-auto my-6;
+    background: oklch(var(--gold));
+  }
+
+  .feature-card {
+    @apply p-6 md:p-8 rounded-none border transition-all duration-300;
+    border-color: oklch(var(--border));
+  }
+  .feature-card:hover {
+    border-color: oklch(var(--gold) / 0.5);
+    box-shadow: 0 4px 24px oklch(var(--gold) / 0.08);
+    transform: translateY(-2px);
+  }
+
+  .gold-text {
+    color: oklch(var(--gold));
+  }
+
+  .hero-gradient {
+    background: linear-gradient(
+      135deg,
+      oklch(0.08 0.01 260) 0%,
+      oklch(0.14 0.015 260) 50%,
+      oklch(0.1 0.01 260) 100%
+    );
+  }
+
+  /* Admin panel specific styles */
+  .admin-sidebar-item-active {
+    background: #6366f1;
+    color: #fff;
+  }
+
+  .admin-sidebar-item {
+    color: #94a3b8;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .admin-sidebar-item:hover {
+    background: #1e1e3f;
+    color: #e2e8f0;
+  }
+}
