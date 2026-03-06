@@ -3,33 +3,61 @@ import { useNavigate } from "@tanstack/react-router";
 import { Loader2, Search, UserCheck, UserX, Users, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { Order } from "../../backend";
-import { useActor } from "../../hooks/useActor";
-import { useInternetIdentity } from "../../hooks/useInternetIdentity";
+import { useAdminActor } from "../../hooks/useAdminActor";
 
 type CustomerRow = {
-  principal: string;
   name: string;
-  hasPurchased: boolean;
+  email: string;
+  phone: string;
+  address: string;
   orderCount: number;
   totalSpent: number;
+  paymentMethods: string[];
+  lastOrderDate: bigint;
+  hasOrders: boolean;
 };
 
+function formatPaymentMethod(method: string): string {
+  const map: Record<string, string> = {
+    card: "Card",
+    upi: "UPI",
+    netbanking: "Net Banking",
+    wallet: "Wallet",
+    emi: "EMI",
+    paylater: "Pay Later",
+  };
+  return map[method] ?? method;
+}
+
 export default function AdminCustomersPage() {
-  const { identity } = useInternetIdentity();
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useAdminActor();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"all" | "purchased" | "registered">(
     "all",
   );
+  const isAdminSession = localStorage.getItem("adminSession") === "true";
 
-  const adminQuery = useQuery<boolean>({
-    queryKey: ["isCallerAdmin"],
+  useEffect(() => {
+    if (!isAdminSession) {
+      void navigate({ to: "/admin/login" });
+    }
+  }, [isAdminSession, navigate]);
+
+  const ordersQuery = useQuery<Order[]>({
+    queryKey: ["adminOrders"],
     queryFn: async () => {
-      if (!actor) return false;
-      return actor.isCallerAdmin();
+      if (!actor) return [];
+      try {
+        return await actor.getOrders();
+      } catch {
+        return [];
+      }
     },
-    enabled: !!actor && !actorFetching && !!identity,
+    enabled: !!actor && !actorFetching && isAdminSession,
+    refetchOnWindowFocus: true,
+    retry: 3,
+    retryDelay: 2000,
   });
 
   const usersQuery = useQuery<
@@ -38,89 +66,116 @@ export default function AdminCustomersPage() {
     queryKey: ["adminRegisteredUsers"],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getRegisteredUsers() as Promise<
-        Array<[{ toString(): string }, { name: string }]>
-      >;
+      try {
+        const result = await actor.getRegisteredUsers();
+        return result as Array<[{ toString(): string }, { name: string }]>;
+      } catch {
+        return [];
+      }
     },
-    enabled: !!actor && !actorFetching && adminQuery.data === true,
-    refetchOnWindowFocus: false,
+    enabled: !!actor && !actorFetching && isAdminSession,
+    refetchOnWindowFocus: true,
+    retry: 3,
+    retryDelay: 2000,
   });
 
-  const ordersQuery = useQuery<Order[]>({
-    queryKey: ["adminOrders"],
-    queryFn: async () => {
-      if (!actor) return [];
-      return actor.getOrders();
-    },
-    enabled: !!actor && !actorFetching && adminQuery.data === true,
-    refetchOnWindowFocus: false,
-  });
-
-  useEffect(() => {
-    if (!identity && !adminQuery.isLoading) {
-      void navigate({ to: "/admin/login" });
-    }
-  }, [identity, adminQuery.isLoading, navigate]);
-
-  useEffect(() => {
-    if (adminQuery.isFetched && adminQuery.data === false) {
-      void navigate({ to: "/admin/login" });
-    }
-  }, [adminQuery.isFetched, adminQuery.data, navigate]);
-
-  const users = usersQuery.data ?? [];
   const orders = ordersQuery.data ?? [];
-  const isLoading =
-    adminQuery.isLoading ||
-    usersQuery.isLoading ||
-    usersQuery.isFetching ||
-    ordersQuery.isLoading;
+  const registeredUsers = usersQuery.data ?? [];
+  const isLoading = ordersQuery.isLoading || ordersQuery.isFetching;
 
-  // Build customer rows by cross-referencing users with orders
+  // Build customer rows: merge orders (by email, deduped) + registered-only users
   const customerRows = useMemo((): CustomerRow[] => {
-    // Build a map of customer names → orders
-    const nameToOrders = new Map<string, Order[]>();
+    // Group orders by email (or name if no email)
+    const byEmail = new Map<string, Order[]>();
     for (const order of orders) {
-      const existing = nameToOrders.get(order.customerName.toLowerCase()) ?? [];
-      nameToOrders.set(order.customerName.toLowerCase(), [...existing, order]);
+      const key =
+        order.email?.toLowerCase().trim() ||
+        order.customerName.toLowerCase().trim();
+      const existing = byEmail.get(key) ?? [];
+      byEmail.set(key, [...existing, order]);
     }
 
-    return users.map(([principal, profile]) => {
-      const matchedOrders = nameToOrders.get(profile.name.toLowerCase()) ?? [];
-      const totalSpent = matchedOrders.reduce(
+    const rows: CustomerRow[] = [];
+
+    // One row per unique email/name from orders
+    for (const [, customerOrders] of byEmail) {
+      const sorted = [...customerOrders].sort((a, b) =>
+        Number(b.createdAt - a.createdAt),
+      );
+      const latest = sorted[0];
+      const totalSpent = customerOrders.reduce(
         (sum, o) => sum + Number(o.totalPrice),
         0,
       );
-      return {
-        principal: principal.toString(),
-        name: profile.name,
-        hasPurchased: matchedOrders.length > 0,
-        orderCount: matchedOrders.length,
+      const paymentMethods = [
+        ...new Set(customerOrders.map((o) => o.paymentMethod)),
+      ];
+      rows.push({
+        name: latest.customerName,
+        email: latest.email || "—",
+        phone: latest.phone,
+        address: latest.address,
+        orderCount: customerOrders.length,
         totalSpent,
-      };
+        paymentMethods,
+        lastOrderDate: latest.createdAt,
+        hasOrders: true,
+      });
+    }
+
+    // Add registered users who have no orders
+    const orderEmails = new Set(
+      orders.map(
+        (o) =>
+          o.email?.toLowerCase().trim() || o.customerName.toLowerCase().trim(),
+      ),
+    );
+    for (const [, profile] of registeredUsers) {
+      const key = profile.name.toLowerCase().trim();
+      if (!orderEmails.has(key)) {
+        rows.push({
+          name: profile.name,
+          email: "—",
+          phone: "—",
+          address: "—",
+          orderCount: 0,
+          totalSpent: 0,
+          paymentMethods: [],
+          lastOrderDate: 0n,
+          hasOrders: false,
+        });
+      }
+    }
+
+    // Sort: customers with orders first, then by most recent
+    rows.sort((a, b) => {
+      if (a.hasOrders && !b.hasOrders) return -1;
+      if (!a.hasOrders && b.hasOrders) return 1;
+      return Number(b.lastOrderDate - a.lastOrderDate);
     });
-  }, [users, orders]);
+
+    return rows;
+  }, [orders, registeredUsers]);
 
   // Filter + search
   const filteredRows = useMemo(() => {
     let rows = customerRows;
-    if (filter === "purchased") rows = rows.filter((r) => r.hasPurchased);
-    if (filter === "registered") rows = rows.filter((r) => !r.hasPurchased);
+    if (filter === "purchased") rows = rows.filter((r) => r.hasOrders);
+    if (filter === "registered") rows = rows.filter((r) => !r.hasOrders);
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       rows = rows.filter(
         (r) =>
           r.name.toLowerCase().includes(q) ||
-          r.principal.toLowerCase().includes(q),
+          r.email.toLowerCase().includes(q) ||
+          r.phone.includes(q),
       );
     }
     return rows;
   }, [customerRows, filter, searchQuery]);
 
-  const purchasedCount = customerRows.filter((r) => r.hasPurchased).length;
-  const registeredOnlyCount = customerRows.filter(
-    (r) => !r.hasPurchased,
-  ).length;
+  const purchasedCount = customerRows.filter((r) => r.hasOrders).length;
+  const registeredOnlyCount = customerRows.filter((r) => !r.hasOrders).length;
 
   const FILTER_TABS: {
     id: "all" | "purchased" | "registered";
@@ -140,7 +195,7 @@ export default function AdminCustomersPage() {
             Customers
           </h2>
           <p className="text-sm mt-0.5" style={{ color: "#64748b" }}>
-            {isLoading ? "Loading…" : `${customerRows.length} registered users`}
+            {isLoading ? "Loading…" : `${customerRows.length} customers`}
           </p>
         </div>
 
@@ -153,7 +208,7 @@ export default function AdminCustomersPage() {
           />
           <input
             type="text"
-            placeholder="Search by name or principal…"
+            placeholder="Search by name, email or phone…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             data-ocid="admin.customers.search_input"
@@ -189,7 +244,7 @@ export default function AdminCustomersPage() {
       <div className="grid grid-cols-3 gap-3">
         {[
           {
-            label: "Total Users",
+            label: "Total Customers",
             value: customerRows.length,
             icon: Users,
             color: "#6366f1",
@@ -284,7 +339,7 @@ export default function AdminCustomersPage() {
             <p className="text-sm" style={{ color: "#64748b" }}>
               {searchQuery
                 ? "Try a different search term"
-                : "Customers will appear here once someone signs in."}
+                : "Customers will appear here once someone places an order."}
             </p>
           </div>
         ) : (
@@ -300,10 +355,13 @@ export default function AdminCustomersPage() {
                   {[
                     "#",
                     "Name",
-                    "Principal ID",
-                    "Status",
+                    "Email",
+                    "Phone",
+                    "Address",
                     "Orders",
                     "Total Spent",
+                    "Payment",
+                    "Status",
                   ].map((h) => (
                     <th
                       key={h}
@@ -318,7 +376,7 @@ export default function AdminCustomersPage() {
               <tbody>
                 {filteredRows.map((row, index) => (
                   <tr
-                    key={row.principal}
+                    key={`${row.email}-${row.name}-${index}`}
                     style={{ borderBottom: "1px solid #1e1e3f" }}
                     data-ocid={`admin.customers.row.${index + 1}`}
                     onMouseEnter={(e) => {
@@ -342,32 +400,25 @@ export default function AdminCustomersPage() {
                     >
                       {row.name || <span style={{ color: "#475569" }}>—</span>}
                     </td>
-                    <td className="px-4 py-3.5">
-                      <span
-                        className="text-xs font-mono"
-                        style={{ color: "#64748b" }}
-                      >
-                        {`${row.principal.slice(0, 10)}…${row.principal.slice(-5)}`}
-                      </span>
+                    <td
+                      className="px-4 py-3.5 text-xs whitespace-nowrap"
+                      style={{ color: "#94a3b8" }}
+                    >
+                      {row.email}
                     </td>
-                    <td className="px-4 py-3.5">
-                      {row.hasPurchased ? (
-                        <span
-                          className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 w-fit"
-                          style={{ background: "#10b98115", color: "#34d399" }}
-                        >
-                          <UserCheck size={11} />
-                          Purchased
-                        </span>
-                      ) : (
-                        <span
-                          className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 w-fit"
-                          style={{ background: "#f59e0b15", color: "#fbbf24" }}
-                        >
-                          <UserX size={11} />
-                          Registered
-                        </span>
-                      )}
+                    <td
+                      className="px-4 py-3.5 text-xs whitespace-nowrap"
+                      style={{ color: "#94a3b8" }}
+                    >
+                      {row.phone}
+                    </td>
+                    <td
+                      className="px-4 py-3.5 text-xs max-w-[160px]"
+                      style={{ color: "#94a3b8" }}
+                    >
+                      <span className="block truncate" title={row.address}>
+                        {row.address}
+                      </span>
                     </td>
                     <td
                       className="px-4 py-3.5 text-center font-semibold"
@@ -384,6 +435,39 @@ export default function AdminCustomersPage() {
                       {row.totalSpent > 0
                         ? `₹${row.totalSpent.toLocaleString("en-IN")}`
                         : "—"}
+                    </td>
+                    <td className="px-4 py-3.5">
+                      {row.paymentMethods.length > 0 ? (
+                        <span
+                          className="text-xs px-2 py-1 rounded-full whitespace-nowrap"
+                          style={{ background: "#6366f115", color: "#818cf8" }}
+                        >
+                          {row.paymentMethods
+                            .map(formatPaymentMethod)
+                            .join(", ")}
+                        </span>
+                      ) : (
+                        <span style={{ color: "#475569" }}>—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3.5">
+                      {row.hasOrders ? (
+                        <span
+                          className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 w-fit whitespace-nowrap"
+                          style={{ background: "#10b98115", color: "#34d399" }}
+                        >
+                          <UserCheck size={11} />
+                          Purchased
+                        </span>
+                      ) : (
+                        <span
+                          className="text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 w-fit whitespace-nowrap"
+                          style={{ background: "#f59e0b15", color: "#fbbf24" }}
+                        >
+                          <UserX size={11} />
+                          Registered
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}

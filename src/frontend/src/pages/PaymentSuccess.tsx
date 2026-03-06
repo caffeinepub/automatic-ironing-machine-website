@@ -114,7 +114,7 @@ export default function PaymentSuccess() {
           style={{ background: "oklch(0.1 0.008 260)" }}
         >
           <img
-            src="/assets/generated/ironing-machine-hero.dim_1400x800.png"
+            src="/assets/uploads/image-10-3.png"
             alt="AIron"
             className="w-16 h-12 md:w-20 md:h-14 object-cover shrink-0"
           />

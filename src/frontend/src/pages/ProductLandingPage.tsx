@@ -9,7 +9,7 @@ export default function ProductLandingPage() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <img
-          src="/assets/image-4.png"
+          src="/assets/uploads/image-10-3.png"
           alt="AIron Automatic Ironing Machine"
           className="absolute inset-0 w-full h-full object-cover opacity-30"
         />
@@ -38,15 +38,17 @@ export default function ProductLandingPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               type="button"
+              data-ocid="landing.explore_features.primary_button"
               onClick={() => navigate({ to: "/features" })}
-              className="btn-gold px-8 py-4 rounded-full font-semibold text-base tracking-wide shadow-gold hover:scale-105 transition-transform duration-200"
+              className="btn-gold px-8 py-4 rounded-full font-semibold text-base tracking-wide hover:scale-105 hover:brightness-110 active:scale-95 transition-all duration-200"
             >
               Explore Features
             </button>
             <button
               type="button"
+              data-ocid="landing.order_now.secondary_button"
               onClick={() => navigate({ to: "/features" })}
-              className="btn-outline-gold px-8 py-4 rounded-full font-semibold text-base tracking-wide hover:scale-105 transition-transform duration-200"
+              className="btn-outline-gold px-8 py-4 rounded-full font-semibold text-base tracking-wide hover:scale-105 hover:brightness-110 active:scale-95 transition-all duration-200"
             >
               Order Now — ₹20,000
             </button>
@@ -145,7 +147,7 @@ export default function ProductLandingPage() {
           </div>
           <div className="rounded-2xl overflow-hidden">
             <img
-              src="/assets/image-6.png"
+              src="/assets/uploads/image-11-4.png"
               alt="AIron machine detail"
               className="w-full h-80 object-cover"
             />
@@ -156,7 +158,7 @@ export default function ProductLandingPage() {
       {/* Lifestyle Section */}
       <section className="relative py-24 px-4 overflow-hidden">
         <img
-          src="/assets/image-7.png"
+          src="/assets/uploads/image-14-7.png"
           alt="AIron lifestyle"
           className="absolute inset-0 w-full h-full object-cover opacity-25"
         />
@@ -173,7 +175,7 @@ export default function ProductLandingPage() {
           <button
             type="button"
             onClick={() => navigate({ to: "/features" })}
-            className="btn-gold px-10 py-4 rounded-full font-semibold text-base tracking-wide shadow-gold hover:scale-105 transition-transform duration-200"
+            className="btn-gold px-10 py-4 rounded-full font-semibold text-base tracking-wide hover:scale-105 active:scale-95 transition-all duration-200"
           >
             See All Features
           </button>
@@ -224,8 +226,9 @@ export default function ProductLandingPage() {
 
           <button
             type="button"
+            data-ocid="landing.pricing.order_now.primary_button"
             onClick={() => navigate({ to: "/features" })}
-            className="btn-gold w-full py-4 rounded-xl font-semibold text-base tracking-wide shadow-gold hover:scale-105 transition-transform duration-200"
+            className="btn-gold w-full py-4 rounded-xl font-semibold text-base tracking-wide hover:scale-105 active:scale-95 transition-all duration-200"
           >
             Order Now
           </button>

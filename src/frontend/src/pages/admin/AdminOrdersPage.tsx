@@ -3,8 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Download, Loader2, Search, ShoppingBag, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { Order } from "../../backend";
-import { useActor } from "../../hooks/useActor";
-import { useInternetIdentity } from "../../hooks/useInternetIdentity";
+import { useAdminActor } from "../../hooks/useAdminActor";
 
 function formatDate(nanoseconds: bigint): string {
   const ms = Number(nanoseconds / 1_000_000n);
@@ -64,45 +63,35 @@ function exportToCSV(orders: Order[]) {
 }
 
 export default function AdminOrdersPage() {
-  const { identity } = useInternetIdentity();
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useAdminActor();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const isAdminSession = localStorage.getItem("adminSession") === "true";
 
-  const adminQuery = useQuery<boolean>({
-    queryKey: ["isCallerAdmin"],
-    queryFn: async () => {
-      if (!actor) return false;
-      return actor.isCallerAdmin();
-    },
-    enabled: !!actor && !actorFetching && !!identity,
-  });
+  useEffect(() => {
+    if (!isAdminSession) {
+      void navigate({ to: "/admin/login" });
+    }
+  }, [isAdminSession, navigate]);
 
   const ordersQuery = useQuery<Order[]>({
     queryKey: ["adminOrders"],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getOrders();
+      try {
+        return await actor.getOrders();
+      } catch {
+        return [];
+      }
     },
-    enabled: !!actor && !actorFetching && adminQuery.data === true,
-    refetchOnWindowFocus: false,
+    enabled: !!actor && !actorFetching && isAdminSession,
+    refetchOnWindowFocus: true,
+    retry: 3,
+    retryDelay: 2000,
   });
 
-  useEffect(() => {
-    if (!identity && !adminQuery.isLoading) {
-      void navigate({ to: "/admin/login" });
-    }
-  }, [identity, adminQuery.isLoading, navigate]);
-
-  useEffect(() => {
-    if (adminQuery.isFetched && adminQuery.data === false) {
-      void navigate({ to: "/admin/login" });
-    }
-  }, [adminQuery.isFetched, adminQuery.data, navigate]);
-
   const orders = ordersQuery.data ?? [];
-  const isLoading =
-    adminQuery.isLoading || ordersQuery.isLoading || ordersQuery.isFetching;
+  const isLoading = ordersQuery.isLoading || ordersQuery.isFetching;
 
   const filteredOrders = useMemo(() => {
     if (!searchQuery.trim()) return orders;

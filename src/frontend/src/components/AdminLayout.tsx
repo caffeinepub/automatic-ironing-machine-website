@@ -7,7 +7,6 @@ import {
   Menu,
   Search,
   Settings,
-  Shield,
   ShoppingBag,
   Users,
   X,
@@ -60,6 +59,7 @@ export default function AdminLayout() {
 
   const handleLogout = () => {
     loggingOutRef.current = true;
+    localStorage.removeItem("adminSession");
     queryClient.clear();
     clear();
     setSidebarOpen(false);
@@ -99,18 +99,17 @@ export default function AdminLayout() {
           style={{ borderBottom: "1px solid #2a2a4a" }}
         >
           <div className="flex items-center gap-3">
-            <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-              style={{ background: "#6366f1" }}
-            >
-              <Shield size={18} style={{ color: "#fff" }} />
-            </div>
+            <img
+              src="/assets/uploads/AIron-1.jpg"
+              alt="AIron"
+              className="w-9 h-9 rounded-lg object-cover shrink-0"
+            />
             <div>
               <span
                 className="font-bold text-base tracking-wide"
                 style={{ color: "#e2e8f0" }}
               >
-                AI<span style={{ color: "#6366f1" }}>ron</span>
+                AI<span style={{ color: "#c9a227" }}>ron</span>
               </span>
               <p className="text-xs" style={{ color: "#64748b" }}>
                 Admin Panel

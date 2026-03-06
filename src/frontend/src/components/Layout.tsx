@@ -64,9 +64,9 @@ export default function Layout() {
               className="flex items-center gap-2 md:gap-3 group min-h-[44px]"
             >
               <img
-                src="/assets/generated/ironpro-logo.dim_256x256.png"
+                src="/assets/uploads/AIron-1.jpg"
                 alt="AIron"
-                className="h-8 w-8 md:h-9 md:w-9 object-contain"
+                className="h-8 w-8 md:h-9 md:w-9 object-contain rounded-md"
               />
               <span
                 className="font-serif text-lg md:text-xl font-semibold tracking-wide"
@@ -78,20 +78,36 @@ export default function Layout() {
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-8">
-              {navLinks.map((link) => (
-                <button
-                  type="button"
-                  key={link.path}
-                  onClick={() => navigate({ to: link.path as "/" })}
-                  className={`text-sm font-medium tracking-wider uppercase transition-colors duration-200 min-h-[44px] ${
-                    location.pathname === link.path
-                      ? "gold-text"
-                      : "text-muted-foreground hover:text-foreground"
-                  } ${link.path === "/checkout" ? "btn-gold px-5 py-2 text-xs" : ""}`}
-                >
-                  {link.label}
-                </button>
-              ))}
+              {navLinks.map((link) => {
+                const isActive =
+                  location.pathname === link.path ||
+                  (link.path === "/checkout" &&
+                    location.pathname === "/checkout");
+                const isCheckout = link.path === "/checkout";
+                return (
+                  <button
+                    type="button"
+                    key={link.path}
+                    data-ocid={`nav.${link.label.toLowerCase().replace(/\s+/g, "_")}.link`}
+                    onClick={() => navigate({ to: link.path as "/" })}
+                    className={
+                      isCheckout
+                        ? `text-sm font-semibold tracking-wider uppercase transition-all duration-200 min-h-[44px] px-5 py-2 rounded-full border ${
+                            isActive
+                              ? "border-gold-500 text-charcoal-950 bg-gold-500"
+                              : "border-gold-500 text-gold-400 hover:bg-gold-500 hover:text-charcoal-950 active:scale-95"
+                          }`
+                        : `text-sm font-medium tracking-wider uppercase transition-colors duration-200 min-h-[44px] ${
+                            isActive
+                              ? "gold-text border-b-2 border-gold-500 pb-0.5"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`
+                    }
+                  >
+                    {link.label}
+                  </button>
+                );
+              })}
               {isAuthenticated && isAdmin && (
                 <button
                   type="button"
@@ -138,23 +154,26 @@ export default function Layout() {
               className="md:hidden border-t border-border/30 px-4 py-4 flex flex-col gap-1"
               style={{ background: "oklch(0.1 0.008 260)" }}
             >
-              {navLinks.map((link) => (
-                <button
-                  type="button"
-                  key={link.path}
-                  onClick={() => {
-                    navigate({ to: link.path as "/" });
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`text-sm font-medium tracking-wider uppercase text-left transition-colors py-3 px-2 min-h-[48px] border-b border-border/10 ${
-                    location.pathname === link.path
-                      ? "gold-text"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {link.label}
-                </button>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = location.pathname === link.path;
+                return (
+                  <button
+                    type="button"
+                    key={link.path}
+                    onClick={() => {
+                      navigate({ to: link.path as "/" });
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`text-sm font-medium tracking-wider uppercase text-left transition-colors py-3 px-2 min-h-[48px] border-b border-border/10 ${
+                      isActive
+                        ? "gold-text font-semibold"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {link.label}
+                  </button>
+                );
+              })}
               {isAdmin && (
                 <button
                   type="button"
@@ -199,9 +218,9 @@ export default function Layout() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <img
-              src="/assets/generated/ironpro-logo.dim_256x256.png"
+              src="/assets/uploads/AIron-1.jpg"
               alt="AIron"
-              className="h-7 w-7 object-contain opacity-70"
+              className="h-7 w-7 object-contain rounded opacity-70"
             />
             <span
               className="font-serif text-sm"

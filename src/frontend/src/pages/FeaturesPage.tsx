@@ -17,38 +17,42 @@ const features = [
     title: "AI-Powered Precision",
     description:
       "Advanced machine learning algorithms detect fabric type and adjust temperature, pressure, and steam levels automatically for a perfect press every time.",
+    image: "/assets/uploads/image-10-3.png",
   },
   {
     icon: Droplets,
     title: "Smart Steam Technology",
     description:
       "Precision-controlled steam injection penetrates deep into fabric fibers, eliminating stubborn wrinkles without damaging delicate materials.",
+    image: "/assets/uploads/image-13-6.png",
   },
   {
     icon: Eye,
     title: "Fabric Recognition",
     description:
       "Multi-sensor array identifies over 50 fabric types — from delicate silk to heavy denim — and applies the optimal ironing profile automatically.",
-    image: "/assets/image-6.png",
+    image: "/assets/uploads/image-11-4.png",
   },
   {
     icon: Wind,
     title: "Rapid Dry System",
     description:
-      "Integrated hot-air circulation dries and irons simultaneously, reducing total garment processing time by up to 60% compared to traditional methods.",
-    image: "/assets/image-5.png",
+      "Integrated hot-air circulation dries and irons simultaneously, reducing total garment processing time by up to 60% compared to traditional methods. Also perfect for drying shoes quickly and efficiently.",
+    image: "/assets/uploads/image-12-5.png",
   },
   {
     icon: Shield,
     title: "Garment Protection",
     description:
       "Real-time thermal monitoring and automatic shut-off safeguards prevent scorching or over-pressing, keeping your wardrobe in pristine condition.",
+    image: "/assets/uploads/image-9-2.png",
   },
   {
     icon: Wifi,
     title: "Smart Connectivity",
     description:
       "Wi-Fi and Bluetooth enabled for remote scheduling, maintenance alerts, and firmware updates via the AIron companion app.",
+    image: "/assets/uploads/image-14-7.png",
   },
 ];
 
@@ -89,7 +93,7 @@ export default function FeaturesPage() {
       {/* Hero */}
       <section className="relative h-[60vh] min-h-[400px] flex items-center justify-center overflow-hidden">
         <img
-          src="/assets/image-4.png"
+          src="/assets/uploads/image-13-6.png"
           alt="AIron Machine"
           className="absolute inset-0 w-full h-full object-cover opacity-40"
         />
@@ -188,7 +192,7 @@ export default function FeaturesPage() {
       {/* Lifestyle Strip */}
       <section className="relative py-24 px-4 overflow-hidden">
         <img
-          src="/assets/image-7.png"
+          src="/assets/uploads/image-14-7.png"
           alt="AIron lifestyle"
           className="absolute inset-0 w-full h-full object-cover opacity-20"
         />
@@ -242,8 +246,9 @@ export default function FeaturesPage() {
           {/* Order Now Button */}
           <button
             type="button"
+            data-ocid="features.order_now.primary_button"
             onClick={handleOrderNow}
-            className="btn-gold text-base px-10 py-4 rounded-full font-semibold tracking-wide shadow-gold hover:scale-105 transition-transform duration-200"
+            className="btn-gold text-base px-10 py-4 rounded-full font-semibold tracking-wide hover:scale-105 active:scale-95 transition-all duration-200"
           >
             Order Now — ₹{totalPrice.toLocaleString("en-IN")}
           </button>

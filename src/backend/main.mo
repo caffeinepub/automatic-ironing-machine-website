@@ -2,11 +2,10 @@ import Stripe "stripe/stripe";
 import AccessControl "authorization/access-control";
 import OutCall "http-outcalls/outcall";
 import Map "mo:core/Map";
-import Iter "mo:core/Iter";
 import Text "mo:core/Text";
 import Runtime "mo:core/Runtime";
-import Time "mo:core/Time";
 import Int "mo:core/Int";
+import Time "mo:core/Time";
 import Principal "mo:core/Principal";
 import MixinAuthorization "authorization/MixinAuthorization";
 
@@ -135,13 +134,18 @@ actor {
   };
 
   var nextOrderId = 1;
+
   let orders = Map.empty<Text, Order>();
 
-  public shared ({ caller }) func submitOrder(customerName : Text, email : Text, phone : Text, address : Text, paymentMethod : Text, quantity : Nat, totalPrice : Nat) : async Order {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can submit orders");
-    };
-
+  public shared ({ caller }) func submitOrder(
+    customerName : Text,
+    email : Text,
+    phone : Text,
+    address : Text,
+    paymentMethod : Text,
+    quantity : Nat,
+    totalPrice : Nat,
+  ) : async Order {
     let orderId = nextOrderId.toText();
     let order : Order = {
       id = orderId;

@@ -1,43 +1,24 @@
 import { Principal } from "@dfinity/principal";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Info, Loader2, Shield, ShieldCheck, UserCog } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { UserRole } from "../../backend";
-import { useActor } from "../../hooks/useActor";
-import { useInternetIdentity } from "../../hooks/useInternetIdentity";
+import { useAdminActor } from "../../hooks/useAdminActor";
 
 export default function AdminSettingsPage() {
-  const { identity } = useInternetIdentity();
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor } = useAdminActor();
   const navigate = useNavigate();
   const [principalInput, setPrincipalInput] = useState("");
   const [isAssigning, setIsAssigning] = useState(false);
   const [principalError, setPrincipalError] = useState("");
-
-  const adminQuery = useQuery<boolean>({
-    queryKey: ["isCallerAdmin"],
-    queryFn: async () => {
-      if (!actor) return false;
-      return actor.isCallerAdmin();
-    },
-    enabled: !!actor && !actorFetching && !!identity,
-  });
+  const isAdminSession = localStorage.getItem("adminSession") === "true";
 
   useEffect(() => {
-    if (!identity && !adminQuery.isLoading) {
+    if (!isAdminSession) {
       void navigate({ to: "/admin/login" });
     }
-  }, [identity, adminQuery.isLoading, navigate]);
-
-  useEffect(() => {
-    if (adminQuery.isFetched && adminQuery.data === false) {
-      void navigate({ to: "/admin/login" });
-    }
-  }, [adminQuery.isFetched, adminQuery.data, navigate]);
-
-  const ownPrincipal = identity?.getPrincipal().toString() ?? "";
+  }, [isAdminSession, navigate]);
 
   const validatePrincipal = (value: string): boolean => {
     if (!value.trim()) {
@@ -79,21 +60,6 @@ export default function AdminSettingsPage() {
     }
   };
 
-  if (adminQuery.isLoading) {
-    return (
-      <div
-        className="flex items-center justify-center min-h-64"
-        data-ocid="admin.settings.loading_state"
-      >
-        <Loader2
-          size={24}
-          className="animate-spin"
-          style={{ color: "#6366f1" }}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6 max-w-2xl" data-ocid="admin.settings.page">
       {/* Page header */}
@@ -115,9 +81,9 @@ export default function AdminSettingsPage() {
         <div className="flex items-center gap-3 mb-4">
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: "#6366f115" }}
+            style={{ background: "#c9a22715" }}
           >
-            <ShieldCheck size={16} style={{ color: "#6366f1" }} />
+            <ShieldCheck size={16} style={{ color: "#c9a227" }} />
           </div>
           <h3 className="text-sm font-semibold" style={{ color: "#e2e8f0" }}>
             Your Account
@@ -128,13 +94,10 @@ export default function AdminSettingsPage() {
           style={{ background: "#0d0d1a", border: "1px solid #1e1e3f" }}
         >
           <p className="text-xs mb-1" style={{ color: "#64748b" }}>
-            Logged-in Principal ID
+            Admin Status
           </p>
-          <p
-            className="text-sm font-mono break-all"
-            style={{ color: "#e2e8f0" }}
-          >
-            {ownPrincipal || "—"}
+          <p className="text-sm font-medium" style={{ color: "#e2e8f0" }}>
+            Logged in as Administrator
           </p>
         </div>
         <div className="mt-3 flex items-center gap-2">

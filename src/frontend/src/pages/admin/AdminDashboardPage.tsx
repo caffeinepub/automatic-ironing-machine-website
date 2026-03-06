@@ -1,10 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import {
   ArrowUpRight,
   BarChart2,
   Loader2,
   Package,
+  RefreshCw,
   ShoppingBag,
   TrendingUp,
   Users,
@@ -22,30 +23,29 @@ import {
   YAxis,
 } from "recharts";
 import type { Order } from "../../backend";
-import { useActor } from "../../hooks/useActor";
-import { useInternetIdentity } from "../../hooks/useInternetIdentity";
+import { useAdminActor } from "../../hooks/useAdminActor";
 
 function useAdminData() {
-  const { actor, isFetching: actorFetching } = useActor();
-  const { identity } = useInternetIdentity();
-
-  const adminQuery = useQuery<boolean>({
-    queryKey: ["isCallerAdmin"],
-    queryFn: async () => {
-      if (!actor) return false;
-      return actor.isCallerAdmin();
-    },
-    enabled: !!actor && !actorFetching && !!identity,
-  });
+  const { actor, isFetching: actorFetching } = useAdminActor();
+  // Re-read from localStorage on each render so the value stays fresh
+  const isAdminSession = localStorage.getItem("adminSession") === "true";
+  const actorReady = !!actor && !actorFetching;
 
   const ordersQuery = useQuery<Order[]>({
     queryKey: ["adminOrders"],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getOrders();
+      try {
+        return await actor.getOrders();
+      } catch {
+        return [];
+      }
     },
-    enabled: !!actor && !actorFetching && adminQuery.data === true,
-    refetchOnWindowFocus: false,
+    enabled: actorReady && isAdminSession,
+    refetchOnWindowFocus: true,
+    refetchInterval: 30000, // Auto-refresh every 30 seconds
+    retry: 3,
+    retryDelay: 2000,
   });
 
   const usersQuery = useQuery<
@@ -54,15 +54,21 @@ function useAdminData() {
     queryKey: ["adminRegisteredUsers"],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getRegisteredUsers() as Promise<
-        Array<[{ toString(): string }, { name: string }]>
-      >;
+      try {
+        const result = await actor.getRegisteredUsers();
+        return result as Array<[{ toString(): string }, { name: string }]>;
+      } catch {
+        return [];
+      }
     },
-    enabled: !!actor && !actorFetching && adminQuery.data === true,
-    refetchOnWindowFocus: false,
+    enabled: actorReady && isAdminSession,
+    refetchOnWindowFocus: true,
+    refetchInterval: 30000,
+    retry: 3,
+    retryDelay: 2000,
   });
 
-  return { adminQuery, ordersQuery, usersQuery };
+  return { ordersQuery, usersQuery };
 }
 
 function formatDate(nanoseconds: bigint): string {
@@ -218,44 +224,15 @@ const CustomTooltipStyle: React.CSSProperties = {
 };
 
 export default function AdminDashboardPage() {
-  const { identity } = useInternetIdentity();
   const navigate = useNavigate();
-  const { adminQuery, ordersQuery, usersQuery } = useAdminData();
-
-  const isAdmin = adminQuery.data === true;
-  const isAdminLoading = adminQuery.isLoading || adminQuery.isFetching;
+  const queryClient = useQueryClient();
+  const { ordersQuery, usersQuery } = useAdminData();
 
   useEffect(() => {
-    if (!identity && !adminQuery.isLoading) {
+    if (localStorage.getItem("adminSession") !== "true") {
       void navigate({ to: "/admin/login" });
     }
-  }, [identity, adminQuery.isLoading, navigate]);
-
-  useEffect(() => {
-    if (adminQuery.isFetched && !isAdmin) {
-      void navigate({ to: "/admin/login" });
-    }
-  }, [adminQuery.isFetched, isAdmin, navigate]);
-
-  if (!identity || isAdminLoading) {
-    return (
-      <div
-        className="flex items-center justify-center min-h-64"
-        data-ocid="admin.dashboard.loading_state"
-      >
-        <div className="text-center">
-          <Loader2
-            size={28}
-            className="animate-spin mx-auto mb-3"
-            style={{ color: "#6366f1" }}
-          />
-          <p className="text-sm" style={{ color: "#64748b" }}>
-            Loading dashboard…
-          </p>
-        </div>
-      </div>
-    );
-  }
+  }, [navigate]);
 
   const orders = ordersQuery.data ?? [];
   const users = usersQuery.data ?? [];
@@ -270,8 +247,49 @@ export default function AdminDashboardPage() {
   const salesData = buildSalesChartData(orders);
   const monthlyData = buildMonthlyData(orders);
 
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
+    queryClient.invalidateQueries({ queryKey: ["adminRegisteredUsers"] });
+  };
+
   return (
     <div className="space-y-6" data-ocid="admin.dashboard.page">
+      {/* Dashboard header with refresh */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold" style={{ color: "#e2e8f0" }}>
+            Dashboard
+          </h2>
+          <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>
+            Live data from the AIron store
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleRefresh}
+          data-ocid="admin.dashboard.primary_button"
+          className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all"
+          style={{
+            background: "#1a1a35",
+            border: "1px solid #2a2a4a",
+            color: "#94a3b8",
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.borderColor = "#6366f1";
+            (e.currentTarget as HTMLElement).style.color = "#e2e8f0";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.borderColor = "#2a2a4a";
+            (e.currentTarget as HTMLElement).style.color = "#94a3b8";
+          }}
+        >
+          <RefreshCw
+            size={14}
+            className={isOrdersLoading ? "animate-spin" : ""}
+          />
+          Refresh
+        </button>
+      </div>
       {/* Stats row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
