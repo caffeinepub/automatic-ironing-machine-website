@@ -68,8 +68,13 @@ export interface _SERVICE {
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getOrders' : ActorMethod<[], Array<Order>>,
+  'getOrdersWithSecret' : ActorMethod<[string], Array<Order>>,
   'getProducts' : ActorMethod<[], Array<Product>>,
   'getRegisteredUsers' : ActorMethod<[], Array<[Principal, UserProfile]>>,
+  'getRegisteredUsersWithSecret' : ActorMethod<
+    [string],
+    Array<[Principal, UserProfile]>
+  >,
   'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,

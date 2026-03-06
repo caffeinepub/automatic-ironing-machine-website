@@ -51,7 +51,7 @@ export default function LoginPage() {
         {/* Left: Hero Image */}
         <div className="lg:w-1/2 relative overflow-hidden">
           <img
-            src="/assets/generated/ironing-machine-hero.dim_1400x800.png"
+            src="/assets/uploads/image-10-3.png"
             alt="AIron Automatic Ironing Machine"
             className="w-full h-48 sm:h-64 lg:h-full object-cover opacity-60"
           />
@@ -92,9 +92,9 @@ export default function LoginPage() {
             <div className="text-center space-y-4">
               <div className="flex justify-center">
                 <img
-                  src="/assets/generated/ironpro-logo.dim_256x256.png"
+                  src="/assets/uploads/AIron-1.jpg"
                   alt="AIron"
-                  className="h-16 w-16 md:h-20 md:w-20 object-contain"
+                  className="h-16 w-16 md:h-20 md:w-20 object-contain rounded-xl"
                 />
               </div>
               <div>

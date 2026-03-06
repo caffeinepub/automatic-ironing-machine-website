@@ -3,7 +3,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { Loader2, Search, UserCheck, UserX, Users, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { Order } from "../../backend";
-import { useAdminActor } from "../../hooks/useAdminActor";
+import { ADMIN_SECRET, useAdminActor } from "../../hooks/useAdminActor";
+import { ADMIN_SESSION_KEY } from "./AdminLoginPage";
 
 type CustomerRow = {
   name: string;
@@ -36,7 +37,18 @@ export default function AdminCustomersPage() {
   const [filter, setFilter] = useState<"all" | "purchased" | "registered">(
     "all",
   );
-  const isAdminSession = localStorage.getItem("adminSession") === "true";
+  const actorReady = !!actor && !actorFetching;
+
+  const isAdminSession = (() => {
+    try {
+      return !!(
+        localStorage.getItem(ADMIN_SESSION_KEY) ||
+        sessionStorage.getItem(ADMIN_SESSION_KEY)
+      );
+    } catch {
+      return false;
+    }
+  })();
 
   useEffect(() => {
     if (!isAdminSession) {
@@ -45,43 +57,46 @@ export default function AdminCustomersPage() {
   }, [isAdminSession, navigate]);
 
   const ordersQuery = useQuery<Order[]>({
-    queryKey: ["adminOrders"],
+    queryKey: ["adminOrders_v2"],
     queryFn: async () => {
       if (!actor) return [];
       try {
-        return await actor.getOrders();
-      } catch {
+        return await actor.getOrdersWithSecret(ADMIN_SECRET);
+      } catch (err) {
+        console.error("getOrdersWithSecret failed:", err);
         return [];
       }
     },
-    enabled: !!actor && !actorFetching && isAdminSession,
+    enabled: actorReady && isAdminSession,
     refetchOnWindowFocus: true,
     retry: 3,
-    retryDelay: 2000,
+    retryDelay: 1000,
   });
 
   const usersQuery = useQuery<
     Array<[{ toString(): string }, { name: string }]>
   >({
-    queryKey: ["adminRegisteredUsers"],
+    queryKey: ["adminRegisteredUsers_v2"],
     queryFn: async () => {
       if (!actor) return [];
       try {
-        const result = await actor.getRegisteredUsers();
+        const result = await actor.getRegisteredUsersWithSecret(ADMIN_SECRET);
         return result as Array<[{ toString(): string }, { name: string }]>;
-      } catch {
+      } catch (err) {
+        console.error("getRegisteredUsersWithSecret failed:", err);
         return [];
       }
     },
-    enabled: !!actor && !actorFetching && isAdminSession,
+    enabled: actorReady && isAdminSession,
     refetchOnWindowFocus: true,
     retry: 3,
-    retryDelay: 2000,
+    retryDelay: 1000,
   });
 
   const orders = ordersQuery.data ?? [];
   const registeredUsers = usersQuery.data ?? [];
-  const isLoading = ordersQuery.isLoading || ordersQuery.isFetching;
+  const isLoading =
+    !actorReady || ordersQuery.isLoading || ordersQuery.isFetching;
 
   // Build customer rows: merge orders (by email, deduped) + registered-only users
   const customerRows = useMemo((): CustomerRow[] => {

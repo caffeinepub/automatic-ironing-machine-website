@@ -9,7 +9,6 @@ import Time "mo:core/Time";
 import Principal "mo:core/Principal";
 import MixinAuthorization "authorization/MixinAuthorization";
 
-// Persistent actor definition
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -169,5 +168,23 @@ actor {
       Runtime.trap("Unauthorized: Only admin can view orders");
     };
     orders.values().toArray();
+  };
+
+  // Secret-based queries - SECURITY WARNING: These functions bypass proper authentication
+  // and should only be used if the secret is kept secure and rotated regularly
+  let adminSecret = "airon2024";
+
+  public query func getOrdersWithSecret(secret : Text) : async [Order] {
+    if (secret != adminSecret) {
+      Runtime.trap("Unauthorized: Invalid admin secret");
+    };
+    orders.values().toArray();
+  };
+
+  public query func getRegisteredUsersWithSecret(secret : Text) : async [(Principal, UserProfile)] {
+    if (secret != adminSecret) {
+      Runtime.trap("Unauthorized: Invalid admin secret");
+    };
+    userProfiles.toArray();
   };
 };

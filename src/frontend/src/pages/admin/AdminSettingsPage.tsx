@@ -12,7 +12,16 @@ export default function AdminSettingsPage() {
   const [principalInput, setPrincipalInput] = useState("");
   const [isAssigning, setIsAssigning] = useState(false);
   const [principalError, setPrincipalError] = useState("");
-  const isAdminSession = localStorage.getItem("adminSession") === "true";
+  const isAdminSession = (() => {
+    try {
+      return !!(
+        localStorage.getItem("airon_admin_session") ||
+        sessionStorage.getItem("airon_admin_session")
+      );
+    } catch {
+      return false;
+    }
+  })();
 
   useEffect(() => {
     if (!isAdminSession) {

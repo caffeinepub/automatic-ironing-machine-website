@@ -1,83 +1,47 @@
 /**
- * useAdminActor — creates a backend actor using the current Internet Identity
- * session so that admin-only backend calls work.
+ * useAdminActor — creates a backend actor for admin operations.
  *
- * The admin must have previously logged in via AdminLoginPage which calls
- * _initializeAccessControlWithSecret to register them as admin in the canister.
- * Once registered, the same II principal always has admin access.
+ * Strategy (v2 — password-only, no Internet Identity):
+ * - Creates an anonymous actor (no identity needed)
+ * - Admin API calls pass the admin secret directly as a parameter
+ *   using the new getOrdersWithSecret / getRegisteredUsersWithSecret backend functions
+ * - No Internet Identity required at all
  */
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import type { backendInterface } from "../backend";
 import { createActorWithConfig } from "../config";
-import { getSecretParameter } from "../utils/urlParams";
-import { useInternetIdentity } from "./useInternetIdentity";
+import { ADMIN_SESSION_KEY } from "../pages/admin/AdminLoginPage";
 
-const ADMIN_ACTOR_KEY = "adminActor";
+export const ADMIN_SECRET = "airon2024";
 
-function getAdminToken(): string {
-  return (
-    getSecretParameter("caffeineAdminToken") ||
-    sessionStorage.getItem("caffeineAdminToken") ||
-    localStorage.getItem("caffeineAdminToken") ||
-    ""
-  );
+export function getAdminSecret(): string {
+  try {
+    return (
+      localStorage.getItem(ADMIN_SESSION_KEY) ||
+      sessionStorage.getItem(ADMIN_SESSION_KEY) ||
+      ADMIN_SECRET
+    );
+  } catch {
+    return ADMIN_SECRET;
+  }
 }
 
 export function useAdminActor() {
-  const queryClient = useQueryClient();
-  const { identity, isInitializing } = useInternetIdentity();
-
-  const principalKey = identity?.getPrincipal().toString() ?? "anon";
-
-  const actorQuery = useQuery<backendInterface>({
-    queryKey: [ADMIN_ACTOR_KEY, principalKey],
+  const actorQuery = useQuery<backendInterface | null>({
+    queryKey: ["adminActor_v2"],
     queryFn: async () => {
-      if (identity) {
-        // Create an authenticated actor so the canister recognises the principal
-        const actor = await createActorWithConfig({
-          agentOptions: { identity },
-        });
-
-        // Re-initialize access control (idempotent — safe to call on every session start)
-        const adminToken = getAdminToken();
-        if (adminToken) {
-          try {
-            await actor._initializeAccessControlWithSecret(adminToken);
-          } catch {
-            // Already registered or token mismatch — ignore, the principal
-            // may still have admin access from a previous registration
-          }
-        }
-        return actor;
-      }
-
-      // Fallback: anonymous actor. Admin-only calls will fail, but this
-      // prevents crashes while II is still loading.
-      return await createActorWithConfig();
+      // Create an anonymous actor — no identity needed for secret-based calls
+      const actor = await createActorWithConfig();
+      return actor;
     },
-    // Don't run until II has finished initializing (to avoid anonymous actor being cached)
-    enabled: !isInitializing,
     staleTime: Number.POSITIVE_INFINITY,
-    retry: 2,
+    retry: 3,
     retryDelay: 1000,
   });
 
-  // When the actor becomes available (or changes), invalidate all admin data queries
-  // so they re-fetch with the newly authenticated actor
-  useEffect(() => {
-    if (actorQuery.data) {
-      queryClient.invalidateQueries({
-        predicate: (query) =>
-          !query.queryKey.includes(ADMIN_ACTOR_KEY) &&
-          (query.queryKey.includes("adminOrders") ||
-            query.queryKey.includes("adminRegisteredUsers")),
-      });
-    }
-  }, [actorQuery.data, queryClient]);
-
   return {
     actor: actorQuery.data ?? null,
-    isFetching: actorQuery.isFetching || isInitializing,
+    isFetching: actorQuery.isFetching,
+    isError: actorQuery.isError,
   };
 }

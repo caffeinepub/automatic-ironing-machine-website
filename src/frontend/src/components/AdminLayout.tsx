@@ -11,8 +11,8 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import { useEffect, useState } from "react";
+import { ADMIN_SESSION_KEY } from "../pages/admin/AdminLoginPage";
 
 const NAV_ITEMS = [
   {
@@ -38,31 +38,35 @@ const NAV_ITEMS = [
 ] as const;
 
 export default function AdminLayout() {
-  const { identity, clear, isInitializing } = useInternetIdentity();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const loggingOutRef = useRef(false);
 
-  const principal = identity?.getPrincipal().toString() ?? "";
-  const truncatedPrincipal = principal
-    ? `${principal.slice(0, 5)}…${principal.slice(-5)}`
-    : "Anonymous";
-
+  // Check admin session on mount
   useEffect(() => {
-    if (loggingOutRef.current && !identity && !isInitializing) {
-      loggingOutRef.current = false;
+    try {
+      const session =
+        localStorage.getItem(ADMIN_SESSION_KEY) ||
+        sessionStorage.getItem(ADMIN_SESSION_KEY);
+      if (!session) {
+        void navigate({ to: "/admin/login" });
+      }
+    } catch {
       void navigate({ to: "/admin/login" });
     }
-  }, [identity, isInitializing, navigate]);
+  }, [navigate]);
 
   const handleLogout = () => {
-    loggingOutRef.current = true;
-    localStorage.removeItem("adminSession");
+    try {
+      localStorage.removeItem(ADMIN_SESSION_KEY);
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    } catch {
+      // ignore
+    }
     queryClient.clear();
-    clear();
     setSidebarOpen(false);
+    void navigate({ to: "/admin/login" });
   };
 
   const currentPageTitle =
@@ -180,7 +184,7 @@ export default function AdminLayout() {
               className="text-xs font-mono truncate"
               style={{ color: "#e2e8f0" }}
             >
-              {truncatedPrincipal}
+              Administrator
             </p>
           </div>
           <button

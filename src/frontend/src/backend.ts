@@ -161,8 +161,10 @@ export interface backendInterface {
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getOrders(): Promise<Array<Order>>;
+    getOrdersWithSecret(secret: string): Promise<Array<Order>>;
     getProducts(): Promise<Array<Product>>;
     getRegisteredUsers(): Promise<Array<[Principal, UserProfile]>>;
+    getRegisteredUsersWithSecret(secret: string): Promise<Array<[Principal, UserProfile]>>;
     getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
@@ -288,6 +290,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getOrdersWithSecret(arg0: string): Promise<Array<Order>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getOrdersWithSecret(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getOrdersWithSecret(arg0);
+            return result;
+        }
+    }
     async getProducts(): Promise<Array<Product>> {
         if (this.processError) {
             try {
@@ -313,6 +329,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getRegisteredUsers();
+            return result;
+        }
+    }
+    async getRegisteredUsersWithSecret(arg0: string): Promise<Array<[Principal, UserProfile]>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getRegisteredUsersWithSecret(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getRegisteredUsersWithSecret(arg0);
             return result;
         }
     }

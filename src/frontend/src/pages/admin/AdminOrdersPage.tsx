@@ -3,7 +3,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { Download, Loader2, Search, ShoppingBag, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { Order } from "../../backend";
-import { useAdminActor } from "../../hooks/useAdminActor";
+import { ADMIN_SECRET, useAdminActor } from "../../hooks/useAdminActor";
+import { ADMIN_SESSION_KEY } from "./AdminLoginPage";
 
 function formatDate(nanoseconds: bigint): string {
   const ms = Number(nanoseconds / 1_000_000n);
@@ -66,7 +67,18 @@ export default function AdminOrdersPage() {
   const { actor, isFetching: actorFetching } = useAdminActor();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const isAdminSession = localStorage.getItem("adminSession") === "true";
+  const actorReady = !!actor && !actorFetching;
+
+  const isAdminSession = (() => {
+    try {
+      return !!(
+        localStorage.getItem(ADMIN_SESSION_KEY) ||
+        sessionStorage.getItem(ADMIN_SESSION_KEY)
+      );
+    } catch {
+      return false;
+    }
+  })();
 
   useEffect(() => {
     if (!isAdminSession) {
@@ -75,23 +87,25 @@ export default function AdminOrdersPage() {
   }, [isAdminSession, navigate]);
 
   const ordersQuery = useQuery<Order[]>({
-    queryKey: ["adminOrders"],
+    queryKey: ["adminOrders_v2"],
     queryFn: async () => {
       if (!actor) return [];
       try {
-        return await actor.getOrders();
-      } catch {
+        return await actor.getOrdersWithSecret(ADMIN_SECRET);
+      } catch (err) {
+        console.error("getOrdersWithSecret failed:", err);
         return [];
       }
     },
-    enabled: !!actor && !actorFetching && isAdminSession,
+    enabled: actorReady && isAdminSession,
     refetchOnWindowFocus: true,
     retry: 3,
-    retryDelay: 2000,
+    retryDelay: 1000,
   });
 
   const orders = ordersQuery.data ?? [];
-  const isLoading = ordersQuery.isLoading || ordersQuery.isFetching;
+  const isLoading =
+    !actorReady || ordersQuery.isLoading || ordersQuery.isFetching;
 
   const filteredOrders = useMemo(() => {
     if (!searchQuery.trim()) return orders;

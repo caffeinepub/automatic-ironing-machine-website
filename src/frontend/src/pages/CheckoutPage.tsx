@@ -13,8 +13,9 @@ import {
   Wallet,
   X,
 } from "lucide-react";
-import { useState } from "react";
-import { useActor } from "../hooks/useActor";
+import { useEffect, useRef, useState } from "react";
+import type { backendInterface } from "../backend";
+import { createActorWithConfig } from "../config";
 
 type Step = "contact" | "method" | "confirm";
 
@@ -202,7 +203,19 @@ function PaymentBar({
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const search = useSearch({ from: "/checkout" });
-  const { actor } = useActor();
+  const actorRef = useRef<backendInterface | null>(null);
+
+  // Initialize anonymous actor on mount — submitOrder has no auth requirement
+  useEffect(() => {
+    createActorWithConfig()
+      .then((a) => {
+        actorRef.current = a;
+      })
+      .catch(() => {
+        // ignore — order will still attempt on pay
+      });
+  }, []);
+
   const quantity = Math.max(
     1,
     Number.parseInt((search as Record<string, string>).quantity || "1", 10) ||
@@ -238,14 +251,6 @@ export default function CheckoutPage() {
     ) {
       return;
     }
-    // Save user profile so the customer appears in the admin dashboard
-    if (actor) {
-      try {
-        await actor.saveCallerUserProfile({ name: contact.name.trim() });
-      } catch {
-        // Non-blocking — proceed even if this fails
-      }
-    }
     setStep("method");
   };
 
@@ -256,24 +261,33 @@ export default function CheckoutPage() {
 
   const handlePay = async () => {
     setIsPaying(true);
-    await new Promise((res) => setTimeout(res, 2000));
+    // Simulate payment processing
+    await new Promise((res) => setTimeout(res, 1500));
+
+    // Submit the order to backend — use actorRef (anonymous actor, no auth needed)
     try {
-      if (actor) {
-        await actor.submitOrder(
-          contact.name,
-          contact.email,
-          contact.phone,
-          contact.address,
-          selectedMethod ?? "unknown",
-          BigInt(quantity),
-          BigInt(totalPrice),
-        );
+      let actor = actorRef.current;
+      // If actor wasn't ready yet, try creating it now
+      if (!actor) {
+        actor = await createActorWithConfig();
+        actorRef.current = actor;
       }
-    } catch {
-      // Silently ignore — still navigate to success
+      await actor.submitOrder(
+        contact.name.trim(),
+        contact.email.trim(),
+        contact.phone.trim(),
+        contact.address.trim(),
+        selectedMethod ?? "unknown",
+        BigInt(quantity),
+        BigInt(totalPrice),
+      );
+    } catch (err) {
+      // Log but don't block — customer still sees success
+      console.error("submitOrder failed:", err);
     }
+
     setIsPaying(false);
-    // Show in-gateway success screen first, then navigate after 2.5s
+    // Show in-gateway success screen, then navigate after 2.5s
     setPaymentDone(true);
     await new Promise((res) => setTimeout(res, 2500));
     navigate({
